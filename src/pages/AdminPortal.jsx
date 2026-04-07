@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useAdmin } from '../context/AdminContext';
+import { useApp } from '../context/AppContext';
 import { 
   Lock, Tag, PackageSearch, Inbox, Database, LogOut, 
   Search, Plus, Upload, Trash2, Check, X, ShieldAlert 
@@ -118,7 +119,7 @@ export default function AdminPortal() {
     { id: 'sellReqs',  label: 'Sell Requests', icon: Inbox },
     { id: 'inventory', label: 'Inventory',     icon: Database },
     { id: 'promo',     label: 'Discounts & Delivery', icon: Tag },
-    { id: 'security',  label: 'Security',      icon: Lock },
+    { id: 'security',  label: 'Settings',      icon: Lock },
   ];
 
   return (
@@ -537,6 +538,7 @@ function PromoTab() {
 
 function SecurityTab() {
   const { adminCreds, changeAdminCredentials } = useAdmin();
+  const { whatsappNumber, setWhatsappNumber } = useApp();
   const [currentP, setCurrentP] = useState('');
   const [u, setU] = useState('');
   const [p, setP] = useState('');
@@ -560,7 +562,23 @@ function SecurityTab() {
 
   return (
     <div className="animate-fade-in max-w-md">
-      <h2 className="text-2xl font-bold text-forest-800 dark:text-cream-100 mb-6">Security Settings</h2>
+      <h2 className="text-2xl font-bold text-forest-800 dark:text-cream-100 mb-6">General Settings</h2>
+      
+      <div className="bg-white dark:bg-forest-800 p-6 rounded-2xl border border-cream-200 dark:border-forest-700 mb-6">
+        <h3 className="font-bold mb-4 dark:text-cream-100">Support Contact</h3>
+        <p className="text-sm text-forest-500 dark:text-cream-400 mb-4">Update the WhatsApp number where support queries and manual orders are routed. (Include country code, no + sign)</p>
+        <div className="flex gap-2">
+          <input 
+            type="text" 
+            value={whatsappNumber} 
+            onChange={e => setWhatsappNumber(e.target.value)} 
+            placeholder="e.g. 919999999999"
+            className="flex-1 border p-2 rounded bg-cream-50 dark:bg-forest-700 dark:text-white dark:border-forest-600" 
+          />
+          <button onClick={() => alert('WhatsApp number updated!')} className="btn-primary py-2 px-6">Save</button>
+        </div>
+      </div>
+
       <div className="bg-white dark:bg-forest-800 p-6 rounded-2xl border border-cream-200 dark:border-forest-700">
         <p className="text-sm text-forest-500 dark:text-cream-400 mb-6">Update the master admin login credentials. Ensure you store these safely.</p>
         
