@@ -124,7 +124,7 @@ export default function AdminPortal() {
   ];
 
   return (
-    <div className="min-h-screen flex bg-cream-50 dark:bg-forest-900 border-x">
+    <div className="min-h-screen flex w-full overflow-x-hidden bg-cream-50 dark:bg-forest-900 border-x">
       {/* ── Mobile Header ── */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-forest-800 dark:bg-forest-950 flex items-center justify-between px-4 z-20 border-b border-forest-700">
         <button onClick={() => setIsSidebarOpen(true)} className="p-2 text-cream-300 hover:bg-forest-700 transition-colors">
@@ -191,7 +191,7 @@ export default function AdminPortal() {
       </aside>
 
       {/* ── Main Content ── */}
-      <main className="flex-1 lg:ml-64 overflow-y-auto pt-16 lg:pt-0">
+      <main className="flex-1 min-w-0 lg:ml-64 overflow-y-auto overflow-x-hidden pt-16 lg:pt-0">
         {/* Inactivity Warning Toast */}
         {countdown !== null && (
           <div className="fixed top-20 right-4 left-4 lg:top-4 lg:left-auto lg:right-4 z-50 flex items-center gap-4 bg-white dark:bg-forest-800 border border-red-200 dark:border-red-800 text-forest-800 dark:text-cream-100 px-5 py-4 shadow-warm-lg" role="alert">
@@ -250,9 +250,9 @@ function OrdersTab() {
           <p className="text-sm text-forest-400 dark:text-cream-500">No orders received yet.</p>
         ) : orders.map(o => (
           <div key={o.id} className={`${cardCls} p-5`}>
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h3 className="font-bold text-forest-700 dark:text-cream-100 text-sm">{o.id}</h3>
+            <div className="flex justify-between items-start mb-4 gap-4">
+              <div className="min-w-0">
+                <h3 className="font-bold text-forest-700 dark:text-cream-100 text-sm truncate">{o.id}</h3>
                 <p className="text-xs text-forest-500 dark:text-cream-500 mt-0.5">{new Date(o.date).toLocaleString()}</p>
               </div>
               <select value={o.status} 
@@ -272,9 +272,9 @@ function OrdersTab() {
             </div>
             <div className="space-y-2 mb-4">
               {o.items.map(i => (
-                <div key={i.id} className="flex justify-between text-sm">
-                  <span className="text-forest-700 dark:text-cream-200">{i.qty}x {i.title}</span>
-                  <span className="font-semibold text-forest-700 dark:text-cream-100">₹{i.price * i.qty}</span>
+                <div key={i.id} className="flex justify-between text-sm gap-4">
+                  <span className="text-forest-700 dark:text-cream-200 leading-tight break-words min-w-0 flex-1">{i.qty}x {i.title}</span>
+                  <span className="font-semibold text-forest-700 dark:text-cream-100 whitespace-nowrap flex-shrink-0">₹{i.price * i.qty}</span>
                 </div>
               ))}
             </div>
@@ -315,12 +315,12 @@ function SellRequestsTab() {
           <p className="text-sm text-forest-400 dark:text-cream-500">No pending requests.</p>
         ) : sellRequests.filter(r => r.status === 'pending' || r.status === 'review').map(r => (
           <div key={r.id} className={`${cardCls} p-5`}>
-            <div className="flex justify-between items-start mb-3">
-              <div>
-                <h3 className="font-bold text-forest-700 dark:text-cream-100 text-lg">{r.title}</h3>
-                <p className="text-xs text-forest-500 dark:text-cream-500 mt-1">By {r.author} | Condition: {r.condition} | MRP: ₹{r.mrp}</p>
+            <div className="flex justify-between items-start mb-3 gap-4">
+              <div className="min-w-0">
+                <h3 className="font-bold text-forest-700 dark:text-cream-100 text-lg leading-tight truncate">{r.title}</h3>
+                <p className="text-xs text-forest-500 dark:text-cream-500 mt-1 truncate">By {r.author} | Condition: {r.condition} | MRP: ₹{r.mrp}</p>
               </div>
-              <span className="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs px-3 py-1 font-medium capitalize">{r.status}</span>
+              <span className="bg-amber-100 flex-shrink-0 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs px-3 py-1 font-medium capitalize">{r.status}</span>
             </div>
             {r.image && (
               <div className="mb-4">
@@ -343,10 +343,10 @@ function SellRequestsTab() {
       <h3 className="font-display font-bold text-xl text-forest-800 dark:text-cream-100 mt-10 mb-4">Past Decisions</h3>
       <div className="space-y-3 opacity-70">
         {sellRequests.filter(r => r.status === 'accepted' || r.status === 'rejected').map(r => (
-          <div key={r.id} className={`${cardCls} p-4 flex justify-between items-center`}>
-            <div>
-              <p className="font-semibold text-sm text-forest-700 dark:text-cream-100">{r.title}</p>
-              <p className="text-xs text-forest-500 dark:text-cream-500 mt-1">
+          <div key={r.id} className={`${cardCls} p-4 flex justify-between items-center gap-4`}>
+            <div className="min-w-0">
+              <p className="font-semibold text-sm text-forest-700 dark:text-cream-100 truncate">{r.title}</p>
+              <p className="text-xs text-forest-500 dark:text-cream-500 mt-1 truncate">
                 <span className={r.status === 'accepted' ? 'text-forest-600 dark:text-forest-400 font-medium' : 'text-red-500 font-medium'}>{r.status.toUpperCase()}</span>
                 {' '}· {new Date(r.reviewedAt).toLocaleDateString()}
               </p>
@@ -454,18 +454,18 @@ function InventoryTab() {
                 </div>
               </div>
             ) : (
-              <div className="flex-1 flex gap-4 items-center">
+              <div className="flex-1 flex gap-4 items-center min-w-0">
                 {b.image
                   ? <img src={b.image} alt={b.title} className="w-12 h-16 object-cover border border-cream-200 dark:border-forest-700 flex-shrink-0" />
                   : <div className={`w-12 h-16 flex-shrink-0 flex items-center justify-center text-xs border border-cream-200 dark:border-forest-700 ${b.coverColor || 'bg-cream-100 dark:bg-forest-700'}`}>📖</div>
                 }
-                <div>
-                  <h4 className="font-semibold text-sm text-forest-700 dark:text-cream-100">{b.title}</h4>
-                  <p className="text-xs text-forest-500 dark:text-cream-500 mt-0.5">{b.author} · MRP ₹{b.mrp}</p>
+                <div className="min-w-0 flex-1">
+                  <h4 className="font-semibold text-sm text-forest-700 dark:text-cream-100 truncate">{b.title}</h4>
+                  <p className="text-xs text-forest-500 dark:text-cream-500 mt-0.5 truncate">{b.author} · MRP ₹{b.mrp}</p>
                 </div>
-                <div className="ml-auto text-right mr-4">
+                <div className="ml-auto text-right flex-shrink-0">
                   <p className="font-bold text-forest-700 dark:text-cream-100">₹{b.price}</p>
-                  <span className="text-[10px] font-medium text-forest-600 bg-cream-100 dark:bg-forest-700 dark:text-cream-400 px-2 py-0.5 mt-1 inline-block">{b.condition}</span>
+                  <span className="text-[10px] font-medium text-forest-600 bg-cream-100 dark:bg-forest-700 dark:text-cream-400 px-2 py-0.5 mt-1 inline-block whitespace-nowrap">{b.condition}</span>
                 </div>
               </div>
             )}
@@ -529,10 +529,10 @@ function PromoTab() {
         </div>
         <div className="space-y-3">
           {promoCodes.map(p => (
-            <div key={p.id} className={`${cardCls} p-4 flex justify-between items-center ${!p.active ? 'opacity-50' : ''}`}>
-              <div className="flex items-center gap-3">
+            <div key={p.id} className={`${cardCls} p-4 flex flex-col sm:flex-row justify-between sm:items-center gap-4 ${!p.active ? 'opacity-50' : ''}`}>
+              <div className="flex flex-wrap items-center gap-3">
                 <span className="font-display font-bold text-lg text-forest-800 dark:text-cream-100">{p.code}</span>
-                <span className="bg-cream-100 dark:bg-forest-700 text-forest-700 dark:text-cream-300 px-2.5 py-0.5 text-xs font-medium">
+                <span className="bg-cream-100 dark:bg-forest-700 text-forest-700 dark:text-cream-300 px-2.5 py-0.5 text-xs font-medium whitespace-nowrap">
                   {p.type === 'percent' ? `${p.discount}% OFF` : `₹${p.discount} OFF`} · Min ₹{p.minOrder}
                 </span>
               </div>
