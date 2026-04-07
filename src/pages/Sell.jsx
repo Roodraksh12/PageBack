@@ -189,24 +189,24 @@ export default function Sell() {
               </div>
             ) : (
               /* ── Manual Entry Form ── */
-              <div className="bg-white dark:bg-forest-800 border border-cream-200 dark:border-forest-700 rounded-2xl shadow-card overflow-hidden">
+              <div className="w-full bg-white dark:bg-black border border-black dark:border-white">
 
                 {/* Form Header */}
-                <div className="px-6 py-4 border-b border-cream-200 dark:border-forest-700 flex items-center gap-2">
-                  <PenLine size={18} className="text-forest-600 dark:text-cream-300" />
-                  <p className="font-display font-bold text-lg text-forest-800 dark:text-cream-100">Book Details</p>
+                <div className="flex items-center gap-2 bg-black text-white dark:bg-white dark:text-black py-4 px-6 border-b border-black dark:border-white">
+                  <PenLine size={18} />
+                  <p className="font-bold text-lg uppercase tracking-widest">Book Details</p>
                 </div>
 
-                <div className="p-6 space-y-5">
+                <div className="p-8 space-y-6">
 
                   {/* ── Book Cover Image Upload ── */}
                   <div>
-                    <label className="block text-sm font-medium text-forest-700 dark:text-cream-300 mb-2">
-                      📷 Book Photo <span className="text-forest-400 dark:text-cream-500 font-normal">(optional but recommended)</span>
+                    <label className="block text-[10px] font-bold uppercase tracking-widest text-black dark:text-white mb-2">
+                      Book Photo <span className="text-neutral-500 font-normal ml-2">(optional but recommended)</span>
                     </label>
 
                     {manualBook.image ? (
-                      <div className="relative w-full rounded-xl overflow-hidden border border-cream-200 dark:border-forest-600 bg-cream-50 dark:bg-forest-700">
+                      <div className="relative w-full border border-black dark:border-white bg-neutral-50 dark:bg-neutral-900 p-2">
                         <img
                           src={manualBook.image}
                           alt="Book cover"
@@ -215,14 +215,14 @@ export default function Sell() {
                         <button
                           type="button"
                           onClick={() => setManualBook(p => ({ ...p, image: null }))}
-                          className="absolute top-2 right-2 w-7 h-7 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center transition-colors shadow"
+                          className="absolute top-4 right-4 w-8 h-8 bg-red-600 flex items-center justify-center text-white hover:bg-red-700 transition-colors"
                         >
-                          <X size={14} className="text-white" />
+                          <X size={14} />
                         </button>
                         <button
                           type="button"
                           onClick={() => fileInputRef.current?.click()}
-                          className="absolute bottom-2 right-2 flex items-center gap-1.5 bg-white/90 dark:bg-forest-800/90 text-forest-700 dark:text-cream-200 text-xs font-medium px-3 py-1.5 rounded-full shadow hover:bg-white transition-colors"
+                          className="absolute bottom-4 right-4 flex items-center gap-1.5 bg-black text-white px-4 py-2 text-[10px] uppercase font-bold tracking-widest hover:bg-neutral-800 transition-colors"
                         >
                           <Camera size={12} /> Change
                         </button>
@@ -231,11 +231,11 @@ export default function Sell() {
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="w-full border-2 border-dashed border-cream-300 dark:border-forest-600 hover:border-forest-400 dark:hover:border-forest-400 rounded-xl py-8 flex flex-col items-center gap-2 text-forest-400 dark:text-cream-500 hover:text-forest-600 dark:hover:text-cream-300 transition-colors bg-cream-50 dark:bg-forest-700/50"
+                        className="w-full border border-dashed border-neutral-400 hover:border-black dark:hover:border-white py-12 flex flex-col items-center gap-3 text-neutral-500 hover:text-black dark:hover:text-white transition-colors bg-transparent"
                       >
                         <Camera size={28} />
-                        <p className="text-sm font-medium">Tap to upload a photo</p>
-                        <p className="text-xs">JPG, PNG — helps us verify faster</p>
+                        <p className="text-xs uppercase font-bold tracking-widest">Tap to upload a photo</p>
+                        <p className="text-[10px] uppercase tracking-widest font-bold opacity-60">JPG, PNG — helps us verify faster</p>
                       </button>
                     )}
 
@@ -250,50 +250,50 @@ export default function Sell() {
 
                   {/* Title */}
                   <div>
-                    <label className="block text-sm font-medium text-forest-700 dark:text-cream-300 mb-1">Book Title *</label>
+                    <label className="block text-[10px] font-bold uppercase tracking-widest text-black dark:text-white mb-2">Book Title *</label>
                     <input
                       type="text"
                       value={manualBook.title}
                       onChange={e => { setManualBook(p => ({ ...p, title: e.target.value })); setManualErrors(p => ({ ...p, title: '' })); }}
                       placeholder="e.g. Harry Potter and the Philosopher's Stone"
-                      className={`w-full border rounded-xl px-4 py-3 bg-white dark:bg-forest-700 text-forest-800 dark:text-cream-100 placeholder-forest-300 dark:placeholder-forest-500 focus:outline-none focus:ring-2 focus:ring-forest-400 text-sm ${manualErrors.title ? 'border-red-400' : 'border-cream-300 dark:border-forest-600'}`}
+                      className={`w-full border px-4 py-3 bg-transparent text-black dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-black text-sm ${manualErrors.title ? 'border-red-500' : 'border-black dark:border-white'}`}
                     />
-                    {manualErrors.title && <p className="text-xs text-red-500 mt-1">{manualErrors.title}</p>}
+                    {manualErrors.title && <p className="text-[10px] font-bold uppercase tracking-widest text-red-500 mt-2">{manualErrors.title}</p>}
                   </div>
 
                   {/* Author */}
                   <div>
-                    <label className="block text-sm font-medium text-forest-700 dark:text-cream-300 mb-1">Author Name *</label>
+                    <label className="block text-[10px] font-bold uppercase tracking-widest text-black dark:text-white mb-2">Author Name *</label>
                     <input
                       type="text"
                       value={manualBook.author}
                       onChange={e => { setManualBook(p => ({ ...p, author: e.target.value })); setManualErrors(p => ({ ...p, author: '' })); }}
                       placeholder="e.g. J.K. Rowling"
-                      className={`w-full border rounded-xl px-4 py-3 bg-white dark:bg-forest-700 text-forest-800 dark:text-cream-100 placeholder-forest-300 dark:placeholder-forest-500 focus:outline-none focus:ring-2 focus:ring-forest-400 text-sm ${manualErrors.author ? 'border-red-400' : 'border-cream-300 dark:border-forest-600'}`}
+                      className={`w-full border px-4 py-3 bg-transparent text-black dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-black text-sm ${manualErrors.author ? 'border-red-500' : 'border-black dark:border-white'}`}
                     />
-                    {manualErrors.author && <p className="text-xs text-red-500 mt-1">{manualErrors.author}</p>}
+                    {manualErrors.author && <p className="text-[10px] font-bold uppercase tracking-widest text-red-500 mt-2">{manualErrors.author}</p>}
                   </div>
 
                   {/* MRP + Genre */}
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-forest-700 dark:text-cream-300 mb-1">MRP (₹) *</label>
+                      <label className="block text-[10px] font-bold uppercase tracking-widest text-black dark:text-white mb-2">MRP (₹) *</label>
                       <input
                         type="number"
                         min="1"
                         value={manualBook.mrp}
                         onChange={e => { setManualBook(p => ({ ...p, mrp: e.target.value })); setManualErrors(p => ({ ...p, mrp: '' })); }}
                         placeholder="e.g. 499"
-                        className={`w-full border rounded-xl px-4 py-3 bg-white dark:bg-forest-700 text-forest-800 dark:text-cream-100 placeholder-forest-300 dark:placeholder-forest-500 focus:outline-none focus:ring-2 focus:ring-forest-400 text-sm ${manualErrors.mrp ? 'border-red-400' : 'border-cream-300 dark:border-forest-600'}`}
+                        className={`w-full border px-4 py-3 bg-transparent text-black dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-black text-sm ${manualErrors.mrp ? 'border-red-500' : 'border-black dark:border-white'}`}
                       />
-                      {manualErrors.mrp && <p className="text-xs text-red-500 mt-1">{manualErrors.mrp}</p>}
+                      {manualErrors.mrp && <p className="text-[10px] font-bold uppercase tracking-widest text-red-500 mt-2">{manualErrors.mrp}</p>}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-forest-700 dark:text-cream-300 mb-1">Genre</label>
+                      <label className="block text-[10px] font-bold uppercase tracking-widest text-black dark:text-white mb-2">Genre</label>
                       <select
                         value={manualBook.genre}
                         onChange={e => setManualBook(p => ({ ...p, genre: e.target.value }))}
-                        className="w-full border border-cream-300 dark:border-forest-600 rounded-xl px-4 py-3 bg-white dark:bg-forest-700 text-forest-800 dark:text-cream-100 focus:outline-none focus:ring-2 focus:ring-forest-400 text-sm"
+                        className="w-full border border-black dark:border-white px-4 py-3 bg-transparent text-black dark:text-white focus:outline-none focus:ring-1 focus:ring-black text-sm uppercase"
                       >
                         {genres.map(g => <option key={g.id} value={g.id}>{g.icon} {g.label}</option>)}
                       </select>
@@ -301,21 +301,21 @@ export default function Sell() {
                   </div>
 
                   {/* ── Condition Selector ── */}
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-medium text-forest-700 dark:text-cream-300">
+                  <div className="pt-2">
+                    <div className="flex items-center justify-between mb-3">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-black dark:text-white">
                         Book Condition *
                       </label>
                       <button
                         type="button"
                         onClick={() => setGuideOpen(true)}
-                        className="flex items-center gap-1 text-xs text-amber-500 hover:text-amber-600 font-medium"
+                        className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-neutral-500 hover:text-black dark:hover:text-white transition-colors"
                       >
                         <Info size={12} /> Condition Guide
                       </button>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {CONDITIONS.map(c => {
                         const mrpVal = Number(manualBook.mrp);
                         const est = mrpVal > 0 ? Math.round(mrpVal * CONDITION_PAYOUTS[c]) : null;
@@ -325,49 +325,49 @@ export default function Sell() {
                             key={c}
                             type="button"
                             onClick={() => { setManualBook(p => ({ ...p, condition: c })); setManualErrors(p => ({ ...p, condition: '' })); }}
-                            className={`text-left p-3.5 rounded-xl border-2 transition-all duration-200 ${
+                            className={`text-left p-6 border transition-colors ${
                               isSelected
-                                ? 'border-forest-700 bg-forest-700/5 dark:bg-forest-600/20'
-                                : 'border-cream-200 dark:border-forest-700 hover:border-forest-400 dark:hover:border-forest-500 bg-white dark:bg-forest-800/60'
+                                ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
+                                : 'border-neutral-300 dark:border-neutral-700 hover:border-black dark:hover:border-white bg-transparent text-black dark:text-white'
                             }`}
                           >
-                            <div className="flex items-center justify-between mb-0.5">
-                              <span className="font-bold text-sm text-forest-800 dark:text-cream-100">{c}</span>
-                              {isSelected && <CheckCircle size={14} className="text-forest-700" />}
+                            <div className="flex items-start justify-between mb-2">
+                              <span className="font-bold text-lg uppercase tracking-tighter">{c}</span>
+                              {isSelected && <CheckCircle size={18} className={isSelected ? 'text-white dark:text-black' : 'text-neutral-300'} />}
                             </div>
-                            <p className="text-xs text-forest-500 dark:text-cream-400 mb-1">{CONDITION_DESC[c]}</p>
+                            <p className={`text-xs mb-4 ${isSelected ? 'opacity-80' : 'text-neutral-500'}`}>{CONDITION_DESC[c]}</p>
                             {est !== null ? (
-                              <p className="font-bold text-sm text-emerald-600 dark:text-emerald-400">
-                                ₹{est} <span className="text-xs font-normal text-forest-400">payout</span>
+                              <p className={`font-bold text-2xl ${isSelected ? 'text-white dark:text-black' : 'text-black dark:text-white'}`}>
+                                ₹{est} <span className="text-[10px] font-bold uppercase tracking-widest ml-1">payout</span>
                               </p>
                             ) : (
-                              <p className="text-xs text-forest-400 dark:text-cream-500">{Math.round(CONDITION_PAYOUTS[c] * 100)}% of MRP</p>
+                              <p className={`text-[10px] font-bold uppercase tracking-widest ${isSelected ? 'opacity-60' : 'text-neutral-400'}`}>[{Math.round(CONDITION_PAYOUTS[c] * 100)}% MRP]</p>
                             )}
                           </button>
                         );
                       })}
                     </div>
-                    {manualErrors.condition && <p className="text-xs text-red-500 mt-1">{manualErrors.condition}</p>}
+                    {manualErrors.condition && <p className="text-[10px] font-bold uppercase tracking-widest text-red-500 mt-2">{manualErrors.condition}</p>}
                   </div>
 
                   {/* MRP info tip */}
-                  <div className="flex items-start gap-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/40 rounded-xl p-3">
-                    <Info size={14} className="text-amber-500 flex-shrink-0 mt-0.5" />
-                    <p className="text-xs text-amber-700 dark:text-amber-400">
-                      Check the book's back cover for the MRP — this gives you the most accurate payout estimate. Our team will verify details at pickup.
+                  <div className="flex items-start gap-4 border border-black dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-900 p-6 mt-4">
+                    <Info size={16} className="text-black dark:text-white flex-shrink-0 mt-0.5" />
+                    <p className="text-xs font-bold uppercase tracking-widest text-black dark:text-white leading-relaxed">
+                      Check the back cover for the MRP. Our team will verify this at pickup.
                     </p>
                   </div>
 
-                  <div className="flex gap-3 pt-1">
+                  <div className="flex gap-4 pt-4">
                     <button
                       type="button"
                       onClick={() => { setShowManualForm(false); setManualErrors({}); }}
-                      className="btn-outline flex-1"
+                      className="border border-black dark:border-white px-6 py-4 text-xs font-bold uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors w-1/3 text-center"
                     >
-                      ← Back
+                      Back
                     </button>
-                    <button type="button" onClick={handleManualSubmit} className="btn-primary flex-1">
-                      Get My Estimate →
+                    <button type="button" onClick={handleManualSubmit} className="bg-black text-white dark:bg-white dark:text-black px-6 py-4 text-xs font-bold uppercase tracking-widest hover:opacity-80 transition-opacity disabled:opacity-30 flex-1 text-center">
+                      Get Estimate
                     </button>
                   </div>
                 </div>
