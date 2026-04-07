@@ -18,6 +18,25 @@ export default function Checkout() {
   
   const [paymentMethod, setPaymentMethod] = useState('');
 
+  const indianStates = [
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Lakshadweep", "Puducherry"
+  ];
+
+  const fetchPincodeDetails = async (pin) => {
+    if (pin.length === 6) {
+      try {
+        const res = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
+        const data = await res.json();
+        if (data && data[0].Status === 'Success') {
+          const postOffice = data[0].PostOffice[0];
+          setForm(prev => ({ ...prev, city: postOffice.District, state: postOffice.State }));
+        }
+      } catch (err) {
+        console.error('Failed to fetch pincode details', err);
+      }
+    }
+  };
+
   // Redirect if cart is empty
   if (cartItems.length === 0) {
     return (
@@ -77,7 +96,10 @@ export default function Checkout() {
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-neutral-500 mb-2">PIN Code *</label>
-                  <input type="text" value={form.pinCode} onChange={e => setForm(p => ({ ...p, pinCode: e.target.value }))} required pattern="[0-9]{6}"
+                  <input type="text" value={form.pinCode} onChange={e => {
+                    setForm(p => ({ ...p, pinCode: e.target.value }));
+                    if (e.target.value.length === 6) fetchPincodeDetails(e.target.value);
+                  }} required pattern="[0-9]{6}" maxLength="6"
                     className="w-full border border-black dark:border-white px-4 py-3 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-1 focus:ring-forest-500 text-sm placeholder-neutral-400" />
                 </div>
                 <div className="md:col-span-2">
@@ -92,8 +114,12 @@ export default function Checkout() {
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-neutral-500 mb-2">State *</label>
-                  <input type="text" value={form.state} onChange={e => setForm(p => ({ ...p, state: e.target.value }))} required
-                    className="w-full border border-black dark:border-white px-4 py-3 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-1 focus:ring-forest-500 text-sm placeholder-neutral-400" />
+                  <select value={form.state} onChange={e => setForm(p => ({ ...p, state: e.target.value }))} required
+                    className="w-full border border-black dark:border-white px-4 py-3 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-1 focus:ring-forest-500 text-sm placeholder-neutral-400 appearance-none"
+                  >
+                    <option value="" disabled>Select State</option>
+                    {indianStates.map(st => <option key={st} value={st}>{st}</option>)}
+                  </select>
                 </div>
               </div>
             </section>
@@ -112,6 +138,7 @@ export default function Checkout() {
                 ].map(method => (
                   <label 
                     key={method.id} 
+                    onClick={() => setPaymentMethod(method.id)}
                     className={`flex items-start gap-4 p-5 border cursor-pointer transition-colors ${
                       paymentMethod === method.id 
                         ? 'border-forest-600 bg-forest-50 dark:bg-forest-900/20' 
