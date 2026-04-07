@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { collection, doc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
+import { collection, doc, onSnapshot, setDoc, updateDoc, increment } from 'firebase/firestore';
 import { db } from '../firebase';
 
 const CartContext = createContext();
@@ -65,6 +65,8 @@ export function CartProvider({ children }) {
     const p = activePromos.find(x => x.code.toUpperCase() === codeStr.toUpperCase() && x.active);
     if (!p) throw new Error('Invalid or expired promo code');
     if (cartTotal < p.minOrder) throw new Error(`Minimum order of ₹${p.minOrder} required`);
+    if (p.expiryDate && new Date(p.expiryDate) < new Date()) throw new Error('This promo code has expired');
+    if (p.maxUses && (p.usedCount || 0) >= p.maxUses) throw new Error('This promo code has reached its usage limit');
     
     setPromoCode(p);
     return p;
@@ -105,6 +107,10 @@ export function CartProvider({ children }) {
     };
     try {
       await setDoc(doc(db, 'orders', orderId), order);
+      // Increment promo usedCount
+      if (promoCode && promoCode.id) {
+        await updateDoc(doc(db, 'promos', String(promoCode.id)), { usedCount: increment(1) });
+      }
       clearCart();
       setCartOpen(false);
       return orderId;

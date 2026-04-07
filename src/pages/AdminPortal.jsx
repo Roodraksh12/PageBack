@@ -488,7 +488,7 @@ function InventoryTab() {
 
 function PromoTab() {
   const { promoCodes, addPromoCode, updatePromoCode, deletePromoCode, deliverySettings, updateDeliverySettings } = useAdmin();
-  const [newPromo, setNewPromo] = useState({ code: '', discount: 0, type: 'flat', minOrder: 0, active: true });
+  const [newPromo, setNewPromo] = useState({ code: '', discount: 0, type: 'flat', minOrder: 0, maxUses: '', expiryDate: '', active: true });
   const [delSet, setDelSet] = useState(deliverySettings);
 
   const handleDeliverySave = (e) => {
@@ -498,7 +498,16 @@ function PromoTab() {
   };
   const handleAddPromo = (e) => {
     e.preventDefault();
-    if (newPromo.code) { addPromoCode({ ...newPromo, code: newPromo.code.toUpperCase() }); setNewPromo({ code: '', discount: 0, type: 'flat', minOrder: 0, active: true }); }
+    if (newPromo.code) {
+      addPromoCode({
+        ...newPromo,
+        code: newPromo.code.toUpperCase(),
+        maxUses: newPromo.maxUses ? Number(newPromo.maxUses) : null,
+        usedCount: 0,
+        expiryDate: newPromo.expiryDate || null,
+      });
+      setNewPromo({ code: '', discount: 0, type: 'flat', minOrder: 0, maxUses: '', expiryDate: '', active: true });
+    }
   };
 
   return (
@@ -522,22 +531,33 @@ function PromoTab() {
         <h2 className="font-display font-bold text-2xl text-forest-800 dark:text-cream-100 mb-5">Promo Codes</h2>
         <div className={`${cardCls} p-6 mb-4`}>
           <h3 className="font-semibold text-forest-800 dark:text-cream-100 mb-4">Create New Promo</h3>
-          <form onSubmit={handleAddPromo} className="grid grid-cols-2 md:grid-cols-5 gap-3 items-end">
+          <form onSubmit={handleAddPromo} className="grid grid-cols-2 md:grid-cols-3 gap-3 items-end">
             <div><label className={lblCls}>Code</label><input type="text" value={newPromo.code} onChange={e=>setNewPromo({...newPromo, code: e.target.value})} required className={inputCls + " uppercase"} /></div>
             <div><label className={lblCls}>Type</label><select value={newPromo.type} onChange={e=>setNewPromo({...newPromo, type: e.target.value})} className={inputCls + " appearance-none"}><option value="flat">Flat (₹)</option><option value="percent">Percent (%)</option></select></div>
             <div><label className={lblCls}>Discount</label><input type="number" value={newPromo.discount} onChange={e=>setNewPromo({...newPromo, discount: Number(e.target.value)})} required className={inputCls} /></div>
             <div><label className={lblCls}>Min Order (₹)</label><input type="number" value={newPromo.minOrder} onChange={e=>setNewPromo({...newPromo, minOrder: Number(e.target.value)})} className={inputCls} /></div>
-            <button type="submit" className={btnPrimary + " justify-center"}>Add</button>
+            <div><label className={lblCls}>Max Uses (blank = unlimited)</label><input type="number" value={newPromo.maxUses} onChange={e=>setNewPromo({...newPromo, maxUses: e.target.value})} placeholder="e.g. 100" className={inputCls} /></div>
+            <div><label className={lblCls}>Expiry Date (optional)</label><input type="date" value={newPromo.expiryDate} onChange={e=>setNewPromo({...newPromo, expiryDate: e.target.value})} className={inputCls} /></div>
+            <div className="md:col-span-3"><button type="submit" className={btnPrimary + " justify-center w-full"}>Add Promo Code</button></div>
           </form>
         </div>
         <div className="space-y-3">
           {promoCodes.map(p => (
-            <div key={p.id} className={`${cardCls} p-4 flex flex-col sm:flex-row justify-between sm:items-center gap-4 ${!p.active ? 'opacity-50' : ''}`}>
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="font-display font-bold text-lg text-forest-800 dark:text-cream-100">{p.code}</span>
-                <span className="bg-cream-100 dark:bg-forest-700 text-forest-700 dark:text-cream-300 px-2.5 py-0.5 text-xs font-medium whitespace-nowrap">
-                  {p.type === 'percent' ? `${p.discount}% OFF` : `₹${p.discount} OFF`} · Min ₹{p.minOrder}
-                </span>
+            <div key={p.id} className={`${cardCls} p-4 flex flex-col sm:flex-row justify-between sm:items-start gap-4 ${!p.active ? 'opacity-50' : ''}`}>
+              <div className="flex flex-col gap-1">
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="font-display font-bold text-lg text-forest-800 dark:text-cream-100">{p.code}</span>
+                  <span className="bg-cream-100 dark:bg-forest-700 text-forest-700 dark:text-cream-300 px-2.5 py-0.5 text-xs font-medium whitespace-nowrap">
+                    {p.type === 'percent' ? `${p.discount}% OFF` : `₹${p.discount} OFF`} · Min ₹{p.minOrder}
+                  </span>
+                  {p.active && p.expiryDate && new Date(p.expiryDate) < new Date() && (
+                    <span className="bg-red-100 text-red-600 px-2 py-0.5 text-xs font-bold">EXPIRED</span>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-3 text-[10px] font-bold uppercase tracking-widest text-forest-400 dark:text-cream-500">
+                  {p.maxUses ? <span>Uses: {p.usedCount || 0} / {p.maxUses}</span> : <span>Unlimited Uses</span>}
+                  {p.expiryDate && <span>Expires: {new Date(p.expiryDate).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })}</span>}
+                </div>
               </div>
               <div className="flex gap-2">
                 <button onClick={() => updatePromoCode(p.id, { active: !p.active })} className="border border-cream-300 dark:border-forest-600 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-forest-600 dark:text-cream-400 hover:bg-cream-50 dark:hover:bg-forest-700 transition-colors">{p.active ? 'Disable' : 'Enable'}</button>
