@@ -1,63 +1,60 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { 
+  onAuthStateChanged, 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  signOut,
+  updateProfile,
+  signInWithPopup
+} from 'firebase/auth';
+import { auth, googleProvider } from '../firebase';
 
 const AuthContext = createContext();
 
-// Simple hash — demo only, not production-secure
-const hashPw = (pw) => {
-  let h = 0;
-  for (let i = 0; i < pw.length; i++) { h = Math.imul(31, h) + pw.charCodeAt(i) | 0; }
-  return h.toString(36);
-};
-
 export function AuthProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('pb_session')); }
-    catch { return null; }
-  });
+  const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (currentUser) localStorage.setItem('pb_session', JSON.stringify(currentUser));
-    else localStorage.removeItem('pb_session');
-  }, [currentUser]);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setCurrentUser({
+          id: user.uid,
+          name: user.displayName || 'User',
+          email: user.email,
+          avatar: (user.displayName || user.email || 'U').charAt(0).toUpperCase()
+        });
+      } else {
+        setCurrentUser(null);
+      }
+      setLoading(false);
+    });
 
-  const getUsers = () => {
-    try { return JSON.parse(localStorage.getItem('pb_users')) || []; }
-    catch { return []; }
-  };
-
-  const register = (name, email, password) => {
-    const users = getUsers();
-    if (users.find(u => u.email.toLowerCase() === email.toLowerCase()))
-      throw new Error('An account with this email already exists');
-    const u = {
-      id: `u_${Date.now()}`,
-      name: name.trim(),
-      email: email.toLowerCase().trim(),
-      pwHash: hashPw(password),
-      avatar: name.trim().split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2),
-      createdAt: new Date().toISOString(),
-    };
-    localStorage.setItem('pb_users', JSON.stringify([...users, u]));
-    const session = { id: u.id, name: u.name, email: u.email, avatar: u.avatar };
-    setCurrentUser(session);
-    return session;
-  };
+    return unsubscribe;
+  }, []);
 
   const login = (email, password) => {
-    const users = getUsers();
-    const u = users.find(x => x.email.toLowerCase() === email.toLowerCase().trim());
-    if (!u) throw new Error('No account found with this email');
-    if (u.pwHash !== hashPw(password)) throw new Error('Incorrect password');
-    const session = { id: u.id, name: u.name, email: u.email, avatar: u.avatar };
-    setCurrentUser(session);
-    return session;
+    return signInWithEmailAndPassword(auth, email, password);
   };
 
-  const logout = () => setCurrentUser(null);
+  const loginWithGoogle = () => {
+    return signInWithPopup(auth, googleProvider);
+  };
+
+  const register = async (name, email, password) => {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(userCredential.user, { displayName: name });
+    setCurrentUser(prev => prev ? { ...prev, name, avatar: name.charAt(0).toUpperCase() } : null);
+    return userCredential.user;
+  };
+
+  const logout = () => {
+    return signOut(auth);
+  };
 
   return (
-    <AuthContext.Provider value={{ currentUser, isLoggedIn: !!currentUser, login, register, logout }}>
-      {children}
+    <AuthContext.Provider value={{ currentUser, isLoggedIn: !!currentUser, login, register, logout, loginWithGoogle }}>
+      {!loading && children}
     </AuthContext.Provider>
   );
 }
