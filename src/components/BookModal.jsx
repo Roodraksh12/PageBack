@@ -15,7 +15,7 @@ export default function BookModal({ book, onClose }) {
   const inCart = cartItems.some(i => i.id === book.id);
   const savings = book.mrp - book.price;
   const pct = Math.round((savings / book.mrp) * 100);
-  const coverUrl = `https://covers.openlibrary.org/b/isbn/${book.isbn}-L.jpg`;
+  const coverUrl = book.image || `https://covers.openlibrary.org/b/isbn/${book.isbn}-L.jpg`;
 
   const waLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hi! I'm interested in buying: "${book.title}" by ${book.author} listed on PageBack at ₹${book.price}`)}`;
 
