@@ -493,7 +493,7 @@ function PromoTab() {
 
   const handleDeliverySave = (e) => {
     e.preventDefault();
-    updateDeliverySettings({ standardFee: Number(delSet.standardFee), expressFee: Number(delSet.expressFee), freeAbove: Number(delSet.freeAbove) });
+    updateDeliverySettings({ standardFee: Number(delSet.standardFee), freeAbove: Number(delSet.freeAbove) });
     alert('Delivery settings saved');
   };
   const handleAddPromo = (e) => {
@@ -515,7 +515,7 @@ function PromoTab() {
       <section>
         <h2 className="font-display font-bold text-2xl text-forest-800 dark:text-cream-100 mb-5">Delivery Fees</h2>
         <form onSubmit={handleDeliverySave} className={`${cardCls} p-6 grid grid-cols-1 md:grid-cols-3 gap-4`}>
-          {[['Standard Delivery (₹)', 'standardFee'], ['Express Delivery (₹)', 'expressFee'], ['Free Delivery Above (₹)', 'freeAbove']].map(([lbl, key]) => (
+          {[['Standard Delivery (₹)', 'standardFee'], ['Free Delivery Above (₹)', 'freeAbove']].map(([lbl, key]) => (
             <div key={key}>
               <label className={lblCls}>{lbl}</label>
               <input type="number" value={delSet[key]} onChange={e=>setDelSet({...delSet, [key]: e.target.value})} className={inputCls} />
