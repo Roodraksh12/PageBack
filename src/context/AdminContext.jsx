@@ -13,6 +13,7 @@ export function AdminProvider({ children }) {
   const [orders, setOrders] = useState([]);
   const [sellRequests, setSellRequests] = useState([]);
   const [inventory, setInventory] = useState([]);
+  const [inventoryLoading, setInventoryLoading] = useState(true);
   const [promoCodes, setPromoCodes] = useState([]);
   const [deliverySettings, setDeliverySettings] = useState(DEFAULT_DELIVERY);
 
@@ -21,7 +22,10 @@ export function AdminProvider({ children }) {
   useEffect(() => {
     const unsubOrders = onSnapshot(collection(db, 'orders'), snap => setOrders(snap.docs.map(d => ({ ...d.data(), id: d.id }))));
     const unsubSells = onSnapshot(collection(db, 'sellRequests'), snap => setSellRequests(snap.docs.map(d => ({ ...d.data(), id: d.id }))));
-    const unsubInv = onSnapshot(collection(db, 'inventory'), snap => setInventory(snap.docs.map(d => ({ ...d.data(), id: d.id }))));
+    const unsubInv = onSnapshot(collection(db, 'inventory'), snap => {
+      setInventory(snap.docs.map(d => ({ ...d.data(), id: d.id })));
+      setInventoryLoading(false);
+    });
     const unsubPromos = onSnapshot(collection(db, 'promos'), snap => setPromoCodes(snap.docs.map(d => ({ ...d.data(), id: d.id }))));
     const unsubSettings = onSnapshot(doc(db, 'admin', 'settings'), docSnap => {
       if (docSnap.exists()) {
@@ -134,7 +138,7 @@ export function AdminProvider({ children }) {
       adminLoggedIn, adminLogin, adminLogout, changeAdminCredentials, adminCreds,
       orders, refreshOrders, updateOrderStatus, STATUS_ORDER,
       sellRequests, addSellRequest, updateSellRequest,
-      inventory, updateInventoryBook, addInventoryBook, deleteInventoryBook, importCSV,
+      inventory, updateInventoryBook, addInventoryBook, deleteInventoryBook, importCSV, inventoryLoading,
       promoCodes, addPromoCode, updatePromoCode, deletePromoCode,
       deliverySettings, updateDeliverySettings,
     }}>

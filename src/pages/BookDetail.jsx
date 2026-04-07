@@ -21,7 +21,7 @@ const demandLabels = {
 export default function BookDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { inventory } = useAdmin();
+  const { inventory, inventoryLoading } = useAdmin();
   const { addToCart, cartItems } = useCart();
   const { whatsappNumber } = useApp();
 
@@ -32,6 +32,16 @@ export default function BookDetail() {
     if (book) document.title = `${book.title} — PageBack`;
     return () => { document.title = 'PageBack'; };
   }, [book]);
+
+  // Still fetching from Firestore — show spinner
+  if (inventoryLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+        <div className="w-10 h-10 border-4 border-forest-200 border-t-forest-700 rounded-full animate-spin" />
+        <p className="text-forest-500 text-sm font-medium">Loading book details…</p>
+      </div>
+    );
+  }
 
   if (!book) {
     return (

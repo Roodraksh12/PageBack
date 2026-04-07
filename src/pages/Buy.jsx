@@ -73,7 +73,7 @@ function BookRequestForm({ onSubmit }) {
 export default function Buy() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { addBookRequest } = useApp();
-  const { inventory } = useAdmin(); // live inventory from admin portal
+  const { inventory, inventoryLoading } = useAdmin(); // live inventory from admin portal
   const tab = searchParams.get('tab') || 'browse';
   const genreParam = searchParams.get('genre') || '';
 
@@ -136,6 +136,11 @@ export default function Buy() {
       {tab === 'request' ? (
         <div className="max-w-7xl mx-auto px-4 py-8">
           <BookRequestForm onSubmit={addBookRequest} />
+        </div>
+      ) : inventoryLoading ? (
+        <div className="max-w-7xl mx-auto px-4 py-20 flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-4 border-forest-200 border-t-forest-700 rounded-full animate-spin" />
+          <p className="text-forest-500 text-sm font-medium">Loading inventory…</p>
         </div>
       ) : (
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
