@@ -1,10 +1,13 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useAdmin } from '../context/AdminContext';
 import { 
   Lock, Tag, PackageSearch, Inbox, Database, LogOut, 
   Search, Plus, Upload, Trash2, Check, X, ShieldAlert 
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+
+const INACTIVITY_TIMEOUT = 30; // seconds before logout
+const WARNING_BEFORE   = 10; // seconds of countdown warning
 
 export default function AdminPortal() {
   const { adminLoggedIn, adminLogin, adminLogout } = useAdmin();
@@ -17,6 +20,52 @@ export default function AdminPortal() {
 
   // Dashboard state
   const [activeTab, setActiveTab] = useState('orders');
+
+  // Inactivity auto-logout state
+  const [countdown, setCountdown] = useState(null); // null = idle timer running; number = warning phase
+  const logoutTimerRef  = useRef(null);
+  const countdownRef    = useRef(null);
+
+  const clearAllTimers = useCallback(() => {
+    clearTimeout(logoutTimerRef.current);
+    clearInterval(countdownRef.current);
+  }, []);
+
+  const startLogoutTimer = useCallback(() => {
+    clearAllTimers();
+    setCountdown(null);
+    // After (INACTIVITY_TIMEOUT - WARNING_BEFORE)s → start countdown warning
+    logoutTimerRef.current = setTimeout(() => {
+      let secs = WARNING_BEFORE;
+      setCountdown(secs);
+      countdownRef.current = setInterval(() => {
+        secs -= 1;
+        if (secs <= 0) {
+          clearInterval(countdownRef.current);
+          adminLogout();
+        } else {
+          setCountdown(secs);
+        }
+      }, 1000);
+    }, (INACTIVITY_TIMEOUT - WARNING_BEFORE) * 1000);
+  }, [clearAllTimers, adminLogout]);
+
+  const resetTimer = useCallback(() => {
+    if (adminLoggedIn) startLogoutTimer();
+  }, [adminLoggedIn, startLogoutTimer]);
+
+  // Start timer when admin logs in; kill it when they log out
+  useEffect(() => {
+    if (adminLoggedIn) {
+      startLogoutTimer();
+      const events = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
+      events.forEach(e => window.addEventListener(e, resetTimer, { passive: true }));
+      return () => {
+        clearAllTimers();
+        events.forEach(e => window.removeEventListener(e, resetTimer));
+      };
+    }
+  }, [adminLoggedIn, startLogoutTimer, resetTimer, clearAllTimers]);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -106,6 +155,35 @@ export default function AdminPortal() {
 
       {/* Main Content Area */}
       <main className="flex-1 ml-64 p-8 overflow-y-auto">
+        {/* Inactivity Warning Toast */}
+        {countdown !== null && (
+          <div className="fixed top-4 right-4 z-50 flex items-center gap-4 bg-amber-50 border-2 border-amber-400 text-amber-900 px-5 py-4 rounded-2xl shadow-xl animate-fade-in" role="alert">
+            {/* Circular countdown ring */}
+            <div className="relative w-12 h-12 flex-shrink-0">
+              <svg className="w-12 h-12 -rotate-90" viewBox="0 0 44 44">
+                <circle cx="22" cy="22" r="18" fill="none" stroke="#fde68a" strokeWidth="4" />
+                <circle
+                  cx="22" cy="22" r="18" fill="none" stroke="#d97706" strokeWidth="4"
+                  strokeDasharray={`${2 * Math.PI * 18}`}
+                  strokeDashoffset={`${2 * Math.PI * 18 * (1 - countdown / WARNING_BEFORE)}`}
+                  strokeLinecap="round"
+                  style={{ transition: 'stroke-dashoffset 1s linear' }}
+                />
+              </svg>
+              <span className="absolute inset-0 flex items-center justify-center font-bold text-amber-700 text-sm">{countdown}</span>
+            </div>
+            <div className="flex-1">
+              <p className="font-bold text-sm">Session expiring soon</p>
+              <p className="text-xs text-amber-700 mt-0.5">You'll be logged out in <span className="font-bold">{countdown}s</span> due to inactivity.</p>
+            </div>
+            <button
+              onClick={() => { resetTimer(); }}
+              className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-lg transition-colors"
+            >
+              Stay Logged In
+            </button>
+          </div>
+        )}
         <div className="max-w-5xl mx-auto">
           {activeTab === 'orders' && <OrdersTab />}
           {activeTab === 'sellReqs' && <SellRequestsTab />}
