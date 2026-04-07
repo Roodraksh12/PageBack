@@ -76,6 +76,22 @@ export function CartProvider({ children }) {
 
   const removePromo = () => setPromoCode(null);
 
+  const cancelOrder = (orderId) => {
+    setOrders(prev => prev.map(order => {
+      if (order.id === orderId && ['placed', 'qc'].includes(order.status)) {
+        return {
+          ...order,
+          status: 'cancelled',
+          statusHistory: [
+            ...order.statusHistory,
+            { status: 'cancelled', label: 'Order Cancelled', time: new Date().toISOString() }
+          ]
+        };
+      }
+      return order;
+    }));
+  };
+
   const placeOrder = (deliveryAddress, paymentMethod) => {
     if (cartItems.length === 0) return null;
     const order = {
@@ -105,7 +121,7 @@ export function CartProvider({ children }) {
       cartItems, addToCart, removeFromCart, clearCart,
       cartTotal, cartCount, cartOpen, setCartOpen,
       promoCode, promoDiscount, cartFinalTotal, applyPromo, removePromo, deliveryFee, deliverySettings,
-      orders, placeOrder
+      orders, placeOrder, cancelOrder
     }}>
       {children}
     </CartContext.Provider>

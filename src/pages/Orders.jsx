@@ -1,5 +1,5 @@
 import { useCart } from '../context/CartContext';
-import { Package, CheckCircle, Truck, Home, Clock, ShoppingBag } from 'lucide-react';
+import { Package, CheckCircle, Truck, Home, Clock, ShoppingBag, XCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const STATUS_STEPS = [
@@ -9,7 +9,7 @@ const STATUS_STEPS = [
   { key: 'delivered', label: 'Delivered',      icon: Home        },
 ];
 
-function OrderCard({ order }) {
+function OrderCard({ order, onCancel }) {
   const currentIdx = STATUS_STEPS.findIndex(s => s.key === order.status);
   const effectiveIdx = currentIdx === -1 ? 0 : currentIdx;
 
@@ -48,7 +48,11 @@ function OrderCard({ order }) {
 
         {/* Status stepper */}
         <div className="flex items-center justify-between pt-2">
-          {STATUS_STEPS.map((s, i) => {
+          {order.status === 'cancelled' ? (
+            <div className="flex w-full items-center justify-center gap-2 py-4 text-red-600 dark:text-red-500 font-bold uppercase tracking-widest text-xs">
+              <XCircle size={16} /> Order Cancelled
+            </div>
+          ) : STATUS_STEPS.map((s, i) => {
             const Icon = s.icon;
             const done = i <= effectiveIdx;
             const active = i === effectiveIdx;
@@ -69,6 +73,22 @@ function OrderCard({ order }) {
             );
           })}
         </div>
+
+        {/* Cancel Button */}
+        {['placed', 'qc'].includes(order.status) && (
+          <div className="mt-6 flex justify-end">
+            <button 
+              onClick={() => {
+                if(window.confirm('Are you sure you want to cancel this order?')) {
+                  onCancel(order.id);
+                }
+              }}
+              className="text-xs font-bold uppercase tracking-widest text-red-600 hover:text-red-800 transition-colors border border-red-200 hover:border-red-600 px-4 py-2"
+            >
+              Cancel Order
+            </button>
+          </div>
+        )}
 
         {/* Checkout Info */}
         {order.deliveryAddress && (
@@ -96,7 +116,7 @@ function OrderCard({ order }) {
 }
 
 export default function Orders() {
-  const { orders } = useCart();
+  const { orders, cancelOrder } = useCart();
 
   return (
     <div className="page-enter pb-20 md:pb-0">
@@ -122,7 +142,7 @@ export default function Orders() {
                 {orders.length} Order{orders.length > 1 ? 's' : ''}
               </h2>
             </div>
-            {orders.map(o => <OrderCard key={o.id} order={o} />)}
+            {orders.map(o => <OrderCard key={o.id} order={o} onCancel={cancelOrder} />)}
           </div>
         )}
       </div>
