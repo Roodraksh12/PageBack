@@ -30,7 +30,7 @@ export default function BookCard({ book, onView }) {
     return () => obs.disconnect();
   }, [pct]);
 
-  const coverUrl = `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`;
+  const coverUrl = book.image || `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`;
 
   return (
     <div className="book-card flex flex-col group">

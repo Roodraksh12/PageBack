@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search, Filter, X, SlidersHorizontal, BookOpen } from 'lucide-react';
-import { books, genres } from '../data/books';
+import { genres } from '../data/books';
 import BookCard from '../components/BookCard';
 import BookModal from '../components/BookModal';
 import { useApp } from '../context/AppContext';
+import { useAdmin } from '../context/AdminContext';
 
 const CONDITIONS = ['Like New', 'Good', 'Acceptable', 'Poor'];
 const LANGUAGES = ['English', 'Hindi', 'Marathi', 'Tamil'];
@@ -73,6 +74,7 @@ function BookRequestForm({ onSubmit }) {
 export default function Buy() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { addBookRequest } = useApp();
+  const { inventory } = useAdmin(); // live inventory from admin portal
   const tab = searchParams.get('tab') || 'browse';
   const genreParam = searchParams.get('genre') || '';
 
@@ -89,7 +91,7 @@ export default function Buy() {
   const toggleGenre = (g)     => setSelectedGenres(p => p.includes(g) ? p.filter(x => x !== g) : [...p, g]);
   const toggleCondition = (c) => setConditions(p => p.includes(c) ? p.filter(x => x !== c) : [...p, c]);
 
-  const filtered = books
+  const filtered = inventory
     .filter(b => {
       if (query && !b.title.toLowerCase().includes(query.toLowerCase()) &&
                    !b.author.toLowerCase().includes(query.toLowerCase())) return false;
