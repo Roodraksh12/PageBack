@@ -36,12 +36,15 @@ function ProtectedRoute({ children }) {
   if (!isLoggedIn) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
-        <div className="w-16 h-16 bg-cream-200 dark:bg-forest-800 rounded-full flex items-center justify-center mb-4 text-2xl">🔒</div>
-        <h2 className="font-display font-bold text-2xl text-forest-800 dark:text-cream-100 mb-2">Login Required</h2>
-        <p className="text-forest-500 dark:text-cream-400 mb-6 max-w-md">
+        <div className="w-16 h-16 border border-black dark:border-white bg-transparent flex items-center justify-center mb-6 text-2xl">🔒</div>
+        <h2 className="font-bold text-4xl uppercase tracking-tighter text-black dark:text-white mb-4">Login Required</h2>
+        <p className="text-neutral-500 text-xs font-bold uppercase tracking-widest mb-8 max-w-md leading-relaxed">
           You need an account to access this page. Sign up or log in to continue.
         </p>
-        <button onClick={() => setShowAuth(true)} className="btn-primary">
+        <button 
+          onClick={() => setShowAuth(true)} 
+          className="border border-black dark:border-white px-8 py-4 text-xs font-bold uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
+        >
           Log In / Sign Up
         </button>
         {showAuth && <AuthModal isOpen={true} onClose={() => setShowAuth(false)} mode="login" />}
