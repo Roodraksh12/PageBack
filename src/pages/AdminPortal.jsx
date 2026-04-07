@@ -3,7 +3,7 @@ import { useAdmin } from '../context/AdminContext';
 import { useApp } from '../context/AppContext';
 import { 
   Lock, Tag, PackageSearch, Inbox, Database, LogOut, 
-  Search, Plus, Upload, Trash2, Check, X, ShieldAlert 
+  Search, Plus, Upload, Trash2, Check, X, ShieldAlert, Camera 
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -23,7 +23,7 @@ export default function AdminPortal() {
   const [activeTab, setActiveTab] = useState('orders');
 
   // Inactivity auto-logout state
-  const [countdown, setCountdown] = useState(null); // null = idle timer running; number = warning phase
+  const [countdown, setCountdown] = useState(null);
   const logoutTimerRef  = useRef(null);
   const countdownRef    = useRef(null);
 
@@ -35,7 +35,6 @@ export default function AdminPortal() {
   const startLogoutTimer = useCallback(() => {
     clearAllTimers();
     setCountdown(null);
-    // After (INACTIVITY_TIMEOUT - WARNING_BEFORE)s → start countdown warning
     logoutTimerRef.current = setTimeout(() => {
       let secs = WARNING_BEFORE;
       setCountdown(secs);
@@ -55,7 +54,6 @@ export default function AdminPortal() {
     if (adminLoggedIn) startLogoutTimer();
   }, [adminLoggedIn, startLogoutTimer]);
 
-  // Start timer when admin logs in; kill it when they log out
   useEffect(() => {
     if (adminLoggedIn) {
       startLogoutTimer();
@@ -78,33 +76,39 @@ export default function AdminPortal() {
 
   if (!adminLoggedIn) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-cream-50 dark:bg-forest-900 transition-colors">
-        <div className="w-full max-w-md bg-white dark:bg-forest-800 rounded-3xl shadow-warm-lg p-8 border border-cream-200 dark:border-forest-700">
-          <div className="flex justify-between items-start mb-6">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-cream-100 dark:bg-forest-900 transition-colors">
+        <div className="w-full max-w-md bg-white dark:bg-forest-800 p-10 rounded-2xl shadow-warm-lg border border-cream-200 dark:border-forest-700">
+          <div className="flex justify-between items-start mb-8">
             <div>
-              <ShieldAlert size={32} className="text-amber-500 mb-2" />
-              <h1 className="font-display font-bold text-2xl text-forest-800 dark:text-cream-100">Admin Portal</h1>
-              <p className="text-sm text-forest-500 dark:text-cream-400">Restricted access area.</p>
+              <div className="w-12 h-12 rounded-xl bg-forest-700/10 dark:bg-forest-600/20 flex items-center justify-center mb-4">
+                <ShieldAlert size={24} className="text-forest-700 dark:text-cream-300" />
+              </div>
+              <h1 className="font-display font-bold text-3xl text-forest-800 dark:text-cream-100 mb-1">Admin Portal</h1>
+              <p className="text-sm text-forest-400 dark:text-cream-500">PageBack internal management</p>
             </div>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-4">
-            {loginError && <div className="p-3 bg-red-50 text-red-600 text-sm rounded-xl">{loginError}</div>}
+          <form onSubmit={handleLogin} className="space-y-5">
+            {loginError && (
+              <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm rounded-xl">
+                {loginError}
+              </div>
+            )}
             <div>
-              <label className="block text-sm font-medium text-forest-700 dark:text-cream-300 mb-1">Username</label>
+              <label className="block text-sm font-medium text-forest-700 dark:text-cream-300 mb-1.5">Username</label>
               <input type="text" value={username} onChange={e => setUsername(e.target.value)} required
-                className="w-full border rounded-xl px-4 py-3 bg-white dark:bg-forest-700 text-forest-800 dark:text-cream-100 focus:outline-none focus:ring-2 focus:ring-amber-500 border-cream-300 dark:border-forest-600" />
+                className="w-full border border-cream-300 dark:border-forest-600 px-4 py-3 bg-white dark:bg-forest-700 text-forest-800 dark:text-cream-100 focus:outline-none focus:ring-2 focus:ring-forest-400 rounded-xl text-sm" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-forest-700 dark:text-cream-300 mb-1">Password</label>
+              <label className="block text-sm font-medium text-forest-700 dark:text-cream-300 mb-1.5">Password</label>
               <input type="password" value={password} onChange={e => setPassword(e.target.value)} required
-                className="w-full border rounded-xl px-4 py-3 bg-white dark:bg-forest-700 text-forest-800 dark:text-cream-100 focus:outline-none focus:ring-2 focus:ring-amber-500 border-cream-300 dark:border-forest-600" />
+                className="w-full border border-cream-300 dark:border-forest-600 px-4 py-3 bg-white dark:bg-forest-700 text-forest-800 dark:text-cream-100 focus:outline-none focus:ring-2 focus:ring-forest-400 rounded-xl text-sm" />
             </div>
-            <button type="submit" className="w-full btn-amber py-3 flex justify-center items-center gap-2">
-              <Lock size={18} /> Access Portal
+            <button type="submit" className="w-full bg-forest-700 hover:bg-forest-800 text-white py-3.5 rounded-xl font-bold text-sm transition-colors flex justify-center items-center gap-2 shadow-sm">
+              <Lock size={16} /> Access Portal
             </button>
-            <div className="text-center mt-4">
-              <Link to="/" className="text-sm text-forest-500 hover:text-forest-700 dark:text-cream-400 dark:hover:text-cream-200">
+            <div className="text-center mt-2">
+              <Link to="/" className="text-sm text-forest-400 dark:text-cream-500 hover:text-forest-700 dark:hover:text-cream-300 transition-colors">
                 ← Return to main site
               </Link>
             </div>
@@ -115,41 +119,44 @@ export default function AdminPortal() {
   }
 
   const tabs = [
-    { id: 'orders',    label: 'Orders',        icon: PackageSearch },
-    { id: 'sellReqs',  label: 'Sell Requests', icon: Inbox },
-    { id: 'inventory', label: 'Inventory',     icon: Database },
+    { id: 'orders',    label: 'Orders',              icon: PackageSearch },
+    { id: 'sellReqs',  label: 'Sell Requests',        icon: Inbox },
+    { id: 'inventory', label: 'Inventory',            icon: Database },
     { id: 'promo',     label: 'Discounts & Delivery', icon: Tag },
-    { id: 'security',  label: 'Settings',      icon: Lock },
+    { id: 'security',  label: 'Settings',             icon: Lock },
   ];
 
   return (
     <div className="min-h-screen flex bg-cream-50 dark:bg-forest-900 transition-colors">
       {/* Sidebar */}
-      <aside className="w-64 bg-white dark:bg-forest-800 border-r border-cream-200 dark:border-forest-700 flex flex-col fixed inset-y-0 z-10">
+      <aside className="w-64 bg-white dark:bg-forest-800 border-r border-cream-200 dark:border-forest-700 flex flex-col fixed inset-y-0 z-10 shadow-sm">
         <div className="p-6 border-b border-cream-200 dark:border-forest-700">
-          <h2 className="font-display font-bold text-xl text-forest-800 dark:text-cream-100 flex items-center gap-2">
-            <ShieldAlert className="text-amber-500" /> Admin
-          </h2>
-          <p className="text-xs text-forest-500 mt-1">PageBack Control Center</p>
+          <div className="flex items-center gap-3 mb-1">
+            <div className="w-8 h-8 rounded-lg bg-forest-700/10 dark:bg-forest-600/20 flex items-center justify-center">
+              <ShieldAlert size={18} className="text-forest-700 dark:text-cream-300" />
+            </div>
+            <h2 className="font-display font-bold text-lg text-forest-800 dark:text-cream-100">Admin</h2>
+          </div>
+          <p className="text-xs text-forest-400 dark:text-cream-500 pl-11">Control Center</p>
         </div>
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
           {tabs.map(t => {
             const Icon = t.icon;
             return (
               <button key={t.id} onClick={() => setActiveTab(t.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                   activeTab === t.id 
-                    ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' 
-                    : 'text-forest-600 dark:text-cream-300 hover:bg-cream-100 dark:hover:bg-forest-700'
+                    ? 'bg-forest-700/10 dark:bg-forest-600/20 text-forest-700 dark:text-cream-200' 
+                    : 'text-forest-500 dark:text-cream-400 hover:bg-cream-100 dark:hover:bg-forest-700 hover:text-forest-700 dark:hover:text-cream-200'
                 }`}>
-                <Icon size={18} /> {t.label}
+                <Icon size={17} /> {t.label}
               </button>
             )
           })}
         </nav>
-        <div className="p-4 border-t border-cream-200 dark:border-forest-700 space-y-2">
-          <button onClick={() => adminLogout()} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg">
-            <LogOut size={16} /> Log Out
+        <div className="p-3 border-t border-cream-200 dark:border-forest-700">
+          <button onClick={() => adminLogout()} className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+            <LogOut size={17} /> Log Out
           </button>
         </div>
       </aside>
@@ -158,30 +165,29 @@ export default function AdminPortal() {
       <main className="flex-1 ml-64 p-8 overflow-y-auto">
         {/* Inactivity Warning Toast */}
         {countdown !== null && (
-          <div className="fixed top-4 right-4 z-50 flex items-center gap-4 bg-amber-50 border-2 border-amber-400 text-amber-900 px-5 py-4 rounded-2xl shadow-xl animate-fade-in" role="alert">
-            {/* Circular countdown ring */}
+          <div className="fixed top-4 right-4 z-50 flex items-center gap-4 bg-white dark:bg-forest-800 border border-red-200 dark:border-red-800 text-forest-800 dark:text-cream-100 px-5 py-4 rounded-2xl shadow-warm-lg animate-fade-in" role="alert">
             <div className="relative w-12 h-12 flex-shrink-0">
               <svg className="w-12 h-12 -rotate-90" viewBox="0 0 44 44">
-                <circle cx="22" cy="22" r="18" fill="none" stroke="#fde68a" strokeWidth="4" />
+                <circle cx="22" cy="22" r="18" fill="none" stroke="#e5e7eb" strokeWidth="2" />
                 <circle
-                  cx="22" cy="22" r="18" fill="none" stroke="#d97706" strokeWidth="4"
+                  cx="22" cy="22" r="18" fill="none" stroke="#ef4444" strokeWidth="2.5"
                   strokeDasharray={`${2 * Math.PI * 18}`}
                   strokeDashoffset={`${2 * Math.PI * 18 * (1 - countdown / WARNING_BEFORE)}`}
                   strokeLinecap="round"
                   style={{ transition: 'stroke-dashoffset 1s linear' }}
                 />
               </svg>
-              <span className="absolute inset-0 flex items-center justify-center font-bold text-amber-700 text-sm">{countdown}</span>
+              <span className="absolute inset-0 flex items-center justify-center font-bold text-red-500 text-xs">{countdown}</span>
             </div>
             <div className="flex-1">
-              <p className="font-bold text-sm">Session expiring soon</p>
-              <p className="text-xs text-amber-700 mt-0.5">You'll be logged out in <span className="font-bold">{countdown}s</span> due to inactivity.</p>
+              <p className="font-semibold text-sm text-red-500">Session expiring</p>
+              <p className="text-xs text-forest-400 dark:text-cream-500 mt-0.5">Logout in <span className="font-bold text-forest-700 dark:text-cream-200">{countdown}s</span> due to inactivity</p>
             </div>
             <button
-              onClick={() => { resetTimer(); }}
-              className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-lg transition-colors"
+               onClick={() => { resetTimer(); }}
+              className="ml-2 px-4 py-2 bg-forest-700 text-white text-xs font-medium rounded-lg hover:bg-forest-800 transition-colors"
             >
-              Stay Logged In
+              Stay Active
             </button>
           </div>
         )}
@@ -207,51 +213,51 @@ function OrdersTab() {
   
   return (
     <div className="animate-fade-in">
-      <h2 className="text-2xl font-bold text-forest-800 dark:text-cream-100 mb-6">Order Management</h2>
+      <h2 className="font-display font-bold text-2xl text-forest-800 dark:text-cream-100 mb-6">Order Management</h2>
       <div className="space-y-4">
         {orders.length === 0 ? (
-          <p className="text-forest-500">No orders received yet.</p>
+          <p className="text-sm text-forest-400 dark:text-cream-500">No orders received yet.</p>
         ) : (
           orders.map(o => (
-            <div key={o.id} className="bg-white dark:bg-forest-800 p-5 rounded-2xl shadow-sm border border-cream-200 dark:border-forest-700">
+            <div key={o.id} className="bg-white dark:bg-forest-800 p-5 rounded-2xl border border-cream-100 dark:border-forest-700 shadow-sm">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h3 className="font-bold text-forest-800 dark:text-cream-100">{o.id}</h3>
-                  <p className="text-sm text-forest-500">{new Date(o.date).toLocaleString()}</p>
+                  <h3 className="font-bold text-forest-800 dark:text-cream-100 text-sm">{o.id}</h3>
+                  <p className="text-xs text-forest-400 dark:text-cream-500 mt-0.5">{new Date(o.date).toLocaleString()}</p>
                 </div>
                 <select 
                   value={o.status}
                   onChange={e => updateOrderStatus(o.id, e.target.value)}
-                  className="bg-cream-50 dark:bg-forest-900 border border-cream-200 dark:border-forest-600 rounded-lg px-3 py-1.5 text-sm font-medium text-forest-800 dark:text-cream-100 focus:ring-2 focus:ring-amber-500"
+                  className="bg-white dark:bg-forest-700 border border-cream-300 dark:border-forest-600 px-3 py-1.5 text-xs font-medium text-forest-700 dark:text-cream-200 focus:outline-none focus:ring-2 focus:ring-forest-400 rounded-lg appearance-none"
                 >
-                  {statuses.map(s => <option key={s} value={s}>{s}</option>)}
+                  {statuses.map(s => <option key={s} value={s} className="bg-white dark:bg-forest-800">{s}</option>)}
                 </select>
               </div>
               <div className="space-y-2 mb-4">
                 {o.items.map(i => (
                   <div key={i.id} className="flex justify-between text-sm">
-                    <span className="text-forest-600 dark:text-cream-300">{i.qty}x {i.title}</span>
-                    <span className="text-forest-800 dark:text-cream-100">₹{i.price * i.qty}</span>
+                    <span className="text-forest-700 dark:text-cream-200">{i.qty}x {i.title}</span>
+                    <span className="font-medium text-forest-800 dark:text-cream-100">₹{i.price * i.qty}</span>
                   </div>
                 ))}
               </div>
-              <div className="border-t border-cream-100 dark:border-forest-700 pt-3 flex justify-between text-sm">
-                <span className="text-forest-500">Subtotal: ₹{o.subtotal} | Delivery: ₹{o.deliveryFee} | Discount: -₹{o.discount || 0}</span>
-                <span className="font-bold text-forest-800 dark:text-emerald-400">Total: ₹{o.total}</span>
+              <div className="border-t border-cream-100 dark:border-forest-700 pt-3 flex flex-col md:flex-row justify-between text-xs gap-2">
+                <span className="text-forest-400 dark:text-cream-500">Subtotal: ₹{o.subtotal} | Delivery: ₹{o.deliveryFee} | Discount: -₹{o.discount || 0}</span>
+                <span className="font-bold text-forest-800 dark:text-cream-100">Total: ₹{o.total}</span>
               </div>
               
               {o.deliveryAddress && (
-                <div className="border-t border-cream-100 dark:border-forest-700 mt-4 pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-forest-600 dark:text-cream-300 bg-cream-50 dark:bg-forest-900/30 p-4 rounded-xl">
+                <div className="border-t border-cream-100 dark:border-forest-700 mt-4 pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-forest-700 dark:text-cream-200 bg-cream-50 dark:bg-forest-700/50 p-4 rounded-xl">
                   <div>
-                    <span className="text-[10px] uppercase font-bold tracking-widest text-forest-500 block mb-1">Deliver To</span>
-                    <span className="font-bold block text-forest-800 dark:text-cream-100">{o.deliveryAddress.fullName}</span>
-                    <span className="block line-clamp-2">{o.deliveryAddress.address}</span>
-                    <span className="block">{o.deliveryAddress.city}, {o.deliveryAddress.state} - {o.deliveryAddress.pinCode}</span>
-                    <span className="block mt-1">Ph: {o.deliveryAddress.phone}</span>
+                    <span className="text-[10px] uppercase font-bold tracking-widest text-forest-400 dark:text-cream-500 block mb-1">Deliver To</span>
+                    <span className="font-bold block">{o.deliveryAddress.fullName}</span>
+                    <span className="block text-forest-500 dark:text-cream-400 mt-1">{o.deliveryAddress.address}</span>
+                    <span className="block mt-1">{o.deliveryAddress.city}, {o.deliveryAddress.state} - {o.deliveryAddress.pinCode}</span>
+                    <span className="block mt-1 text-forest-400 dark:text-cream-500">Ph: {o.deliveryAddress.phone}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] uppercase font-bold tracking-widest text-forest-500 block mb-1">Payment Method</span>
-                    <span className="font-bold text-forest-800 dark:text-cream-100">
+                    <span className="text-[10px] uppercase font-bold tracking-widest text-forest-400 dark:text-cream-500 block mb-1">Payment Method</span>
+                    <span className="font-bold">
                       {o.paymentMethod === 'Online' ? 'Prepaid (Online)' : 'Cash on Delivery'}
                     </span>
                   </div>
@@ -270,32 +276,32 @@ function SellRequestsTab() {
   
   return (
     <div className="animate-fade-in">
-      <h2 className="text-2xl font-bold text-forest-800 dark:text-cream-100 mb-6">Sell Requests To Review</h2>
+      <h2 className="font-display font-bold text-2xl text-forest-800 dark:text-cream-100 mb-6">Sell Requests To Review</h2>
       <div className="space-y-4">
         {sellRequests.filter(r => r.status === 'pending' || r.status === 'review').length === 0 ? (
-          <p className="text-forest-500">No pending requests.</p>
+          <p className="text-sm text-forest-400 dark:text-cream-500">No pending requests.</p>
         ) : (
           sellRequests.filter(r => r.status === 'pending' || r.status === 'review').map(r => (
-            <div key={r.id} className="bg-white dark:bg-forest-800 p-5 rounded-2xl shadow-sm border border-amber-200 dark:border-amber-900">
+            <div key={r.id} className="bg-white dark:bg-forest-800 p-5 border border-cream-100 dark:border-forest-700 rounded-2xl shadow-sm">
               <div className="flex justify-between items-start mb-3">
                 <div>
                   <h3 className="font-bold text-forest-800 dark:text-cream-100 text-lg">{r.title}</h3>
-                  <p className="text-sm text-forest-600 dark:text-cream-400">By {r.author} | Condition: {r.condition} | MRP: ₹{r.mrp}</p>
+                  <p className="text-xs text-forest-400 dark:text-cream-500 mt-1">By {r.author} | Condition: {r.condition} | MRP: ₹{r.mrp}</p>
                 </div>
-                <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-bold uppercase">{r.status}</span>
+                <span className="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs px-3 py-1 rounded-full font-medium capitalize">{r.status}</span>
               </div>
               {r.image && (
                 <div className="mb-4">
-                  <p className="text-xs text-forest-500 mb-1">Uploaded Photo:</p>
-                  <img src={r.image} alt="Book" className="h-32 object-contain border border-cream-200 dark:border-forest-700 rounded-lg" />
+                  <p className="text-xs font-medium text-forest-400 dark:text-cream-500 mb-2">Uploaded Photo:</p>
+                  <img src={r.image} alt="Book" className="h-32 object-contain rounded-xl border border-cream-200 dark:border-forest-600" />
                 </div>
               )}
               <div className="flex gap-2 mt-4">
-                <button onClick={() => updateSellRequest(r.id, 'accepted')} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium flex items-center gap-1">
-                  <Check size={16} /> Accept & Add to Inventory
+                <button onClick={() => updateSellRequest(r.id, 'accepted')} className="px-4 py-2 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors text-sm font-medium rounded-lg flex items-center gap-2">
+                  <Check size={14} /> Accept & Add
                 </button>
-                <button onClick={() => updateSellRequest(r.id, 'rejected')} className="px-4 py-2 bg-red-100 text-red-700 hover:bg-red-200 rounded-lg text-sm font-medium flex items-center gap-1">
-                  <X size={16} /> Reject
+                <button onClick={() => updateSellRequest(r.id, 'rejected')} className="px-4 py-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors text-sm font-medium rounded-lg flex items-center gap-2">
+                  <X size={14} /> Reject
                 </button>
               </div>
             </div>
@@ -303,13 +309,13 @@ function SellRequestsTab() {
         )}
       </div>
 
-      <h3 className="text-xl font-bold text-forest-800 dark:text-cream-100 mt-10 mb-4">Past Decisions</h3>
+      <h3 className="font-display font-bold text-xl text-forest-800 dark:text-cream-100 mt-10 mb-4">Past Decisions</h3>
       <div className="space-y-3 opacity-70">
         {sellRequests.filter(r => r.status === 'accepted' || r.status === 'rejected').map(r => (
-          <div key={r.id} className="bg-white dark:bg-forest-800 p-4 rounded-xl border border-cream-200 dark:border-forest-700 flex justify-between items-center">
+          <div key={r.id} className="bg-white dark:bg-forest-800 p-4 border border-cream-100 dark:border-forest-700 rounded-xl flex justify-between items-center">
             <div>
-              <p className="font-bold text-forest-800 dark:text-cream-100">{r.title}</p>
-              <p className="text-xs text-forest-500">Decision: {r.status.toUpperCase()} on {new Date(r.reviewedAt).toLocaleDateString()}</p>
+              <p className="font-semibold text-sm text-forest-800 dark:text-cream-100">{r.title}</p>
+              <p className="text-xs text-forest-400 dark:text-cream-500 mt-1">Decision: <span className={r.status === 'accepted' ? 'text-emerald-600 dark:text-emerald-400 font-medium' : 'text-red-500 font-medium'}>{r.status.toUpperCase()}</span> on {new Date(r.reviewedAt).toLocaleDateString()}</p>
             </div>
           </div>
         ))}
@@ -355,100 +361,100 @@ function InventoryTab() {
   return (
     <div className="animate-fade-in">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-forest-800 dark:text-cream-100">Live Inventory ({inventory.length})</h2>
+        <h2 className="font-display font-bold text-2xl text-forest-800 dark:text-cream-100">Live Inventory ({inventory.length})</h2>
         <div className="flex gap-2">
           <input type="file" accept=".csv" ref={fileInput} className="hidden" onChange={handleCSV} />
-          <button onClick={() => fileInput.current.click()} className="btn-outline flex items-center gap-2 py-2 px-3 text-sm">
-            <Upload size={16} /> Bulk CSV Import
+          <button onClick={() => fileInput.current.click()} className="border border-cream-300 dark:border-forest-600 bg-white dark:bg-forest-800 px-3 py-2 flex items-center gap-2 text-xs font-medium text-forest-600 dark:text-cream-300 hover:bg-cream-50 dark:hover:bg-forest-700 transition-colors rounded-lg">
+            <Upload size={14} /> Bulk CSV
           </button>
           <button onClick={() => {
             setEditForm({ title: '', author: '', mrp: 0, price: 0, condition: 'Good', genre: 'Fiction' });
             setEditingId('new');
-          }} className="btn-amber flex items-center gap-2 py-2 px-3 text-sm">
-            <Plus size={16} /> Add Book
+          }} className="bg-forest-700 hover:bg-forest-800 text-white px-3 py-2 flex items-center gap-2 text-xs font-medium transition-colors rounded-lg shadow-sm">
+            <Plus size={14} /> Add Book
           </button>
         </div>
       </div>
 
-      <div className="relative mb-6">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-forest-400" size={18} />
+      <div className="relative mb-5">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-forest-400 dark:text-cream-500" size={15} />
         <input type="text" placeholder="Search inventory..." value={q} onChange={e => setQ(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 bg-white dark:bg-forest-800 border border-cream-200 dark:border-forest-700 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none text-forest-800 dark:text-cream-100" />
+          className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-forest-800 border border-cream-200 dark:border-forest-700 focus:outline-none focus:ring-2 focus:ring-forest-400 text-sm text-forest-700 dark:text-cream-200 placeholder:text-forest-300 dark:placeholder:text-cream-600 rounded-xl" />
       </div>
 
       <div className="space-y-3">
         {editingId === 'new' && (
-          <div className="bg-amber-50 dark:bg-amber-900/10 p-5 rounded-2xl border-2 border-amber-400">
-            <h3 className="font-bold mb-4 dark:text-amber-400">Add New Book</h3>
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <input type="text" placeholder="Title" value={editForm.title} onChange={e=>setEditForm({...editForm, title: e.target.value})} className="border p-2 rounded bg-white dark:bg-forest-800 dark:text-cream-100" />
-              <input type="text" placeholder="Author" value={editForm.author} onChange={e=>setEditForm({...editForm, author: e.target.value})} className="border p-2 rounded bg-white dark:bg-forest-800 dark:text-cream-100" />
-              <input type="number" placeholder="MRP" value={editForm.mrp} onChange={e=>setEditForm({...editForm, mrp: e.target.value})} className="border p-2 rounded bg-white dark:bg-forest-800 dark:text-cream-100" />
-              <input type="number" placeholder="Sell Price" value={editForm.price} onChange={e=>setEditForm({...editForm, price: e.target.value})} className="border p-2 rounded bg-white dark:bg-forest-800 dark:text-cream-100" />
-              <div className="col-span-2 flex items-center gap-3 border p-2 rounded bg-white dark:bg-forest-800 dark:text-cream-100">
-                <label className="text-sm border border-cream-300 dark:border-forest-600 px-3 py-1 bg-cream-100 dark:bg-forest-700 text-forest-700 dark:text-cream-200 rounded-lg cursor-pointer hover:bg-cream-200 dark:hover:bg-forest-600 transition-colors flex items-center gap-1 font-medium">
-                  <Camera size={14} /> Upload Cover
+          <div className="p-5 border border-cream-200 dark:border-forest-700 bg-white dark:bg-forest-800 rounded-2xl mb-5 shadow-sm">
+            <h3 className="font-semibold text-forest-800 dark:text-cream-100 mb-4">Add New Book</h3>
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <input type="text" placeholder="Title" value={editForm.title} onChange={e=>setEditForm({...editForm, title: e.target.value})} className="border border-cream-200 dark:border-forest-600 p-2.5 bg-white dark:bg-forest-700 dark:text-cream-100 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-400" />
+              <input type="text" placeholder="Author" value={editForm.author} onChange={e=>setEditForm({...editForm, author: e.target.value})} className="border border-cream-200 dark:border-forest-600 p-2.5 bg-white dark:bg-forest-700 dark:text-cream-100 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-400" />
+              <input type="number" placeholder="MRP" value={editForm.mrp} onChange={e=>setEditForm({...editForm, mrp: e.target.value})} className="border border-cream-200 dark:border-forest-600 p-2.5 bg-white dark:bg-forest-700 dark:text-cream-100 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-400" />
+              <input type="number" placeholder="Sell Price" value={editForm.price} onChange={e=>setEditForm({...editForm, price: e.target.value})} className="border border-cream-200 dark:border-forest-600 p-2.5 bg-white dark:bg-forest-700 dark:text-cream-100 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-400" />
+              <div className="col-span-2 flex items-center gap-3 border border-cream-200 dark:border-forest-600 p-3 rounded-lg bg-cream-50 dark:bg-forest-700/50">
+                <label className="bg-forest-700 hover:bg-forest-800 text-white px-3 py-1.5 text-xs font-medium cursor-pointer transition-colors rounded-lg flex items-center gap-2">
+                  <Camera size={13} /> Upload Cover
                   <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                 </label>
-                {editForm.image && <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1"><Check size={14} /> Image Attached</span>}
+                {editForm.image && <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1"><Check size={13} /> Attached</span>}
               </div>
             </div>
             <div className="flex gap-2 mt-4">
-              <button className="btn-primary py-1 px-4 text-sm" onClick={() => { addInventoryBook(editForm); setEditingId(null); }}>Save</button>
-              <button className="btn-outline py-1 px-4 text-sm" onClick={() => setEditingId(null)}>Cancel</button>
+              <button className="bg-forest-700 hover:bg-forest-800 text-white px-5 py-2 text-sm font-medium rounded-lg transition-colors shadow-sm" onClick={() => { addInventoryBook(editForm); setEditingId(null); }}>Save</button>
+              <button className="border border-cream-200 dark:border-forest-600 px-5 py-2 text-sm font-medium text-forest-600 dark:text-cream-400 hover:bg-cream-50 dark:hover:bg-forest-700 rounded-lg transition-colors" onClick={() => setEditingId(null)}>Cancel</button>
             </div>
           </div>
         )}
 
         {filtered.slice(0, 50).map(b => (
-          <div key={b.id} className="bg-white dark:bg-forest-800 p-4 rounded-xl border border-cream-200 dark:border-forest-700 flex justify-between items-center group hover:shadow-md transition-shadow">
+          <div key={b.id} className="p-4 border border-cream-100 dark:border-forest-700 flex justify-between items-center group hover:border-cream-300 dark:hover:border-forest-600 transition-colors bg-white dark:bg-forest-800 rounded-xl">
             {editingId === b.id ? (
               <div className="flex-1 mr-4">
-                <div className="grid grid-cols-2 gap-2 mb-2">
-                  <input type="text" value={editForm.title} onChange={e=>setEditForm({...editForm, title: e.target.value})} className="border p-1 text-sm bg-white dark:bg-forest-700 dark:text-white" />
-                  <input type="text" value={editForm.author} onChange={e=>setEditForm({...editForm, author: e.target.value})} className="border p-1 text-sm bg-white dark:bg-forest-700 dark:text-white" />
-                  <input type="number" value={editForm.mrp} onChange={e=>setEditForm({...editForm, mrp: e.target.value})} className="border p-1 text-sm bg-white dark:bg-forest-700 dark:text-white" placeholder="MRP" />
-                  <input type="number" value={editForm.price} onChange={e=>setEditForm({...editForm, price: e.target.value})} className="border p-1 text-sm bg-white dark:bg-forest-700 dark:text-white" placeholder="Price" />
-                  <div className="col-span-2 flex items-center gap-2 border border-transparent p-1 text-sm bg-white dark:bg-forest-700 rounded">
-                    <label className="text-xs px-2 py-1 bg-cream-200 dark:bg-forest-600 text-forest-800 dark:text-cream-100 rounded cursor-pointer hover:bg-cream-300 dark:hover:bg-forest-500 font-medium">
-                      Upload Cover
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <input type="text" value={editForm.title} onChange={e=>setEditForm({...editForm, title: e.target.value})} className="border border-cream-200 dark:border-forest-600 p-2 text-sm bg-white dark:bg-forest-700 dark:text-cream-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-forest-400" />
+                  <input type="text" value={editForm.author} onChange={e=>setEditForm({...editForm, author: e.target.value})} className="border border-cream-200 dark:border-forest-600 p-2 text-sm bg-white dark:bg-forest-700 dark:text-cream-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-forest-400" />
+                  <input type="number" value={editForm.mrp} onChange={e=>setEditForm({...editForm, mrp: e.target.value})} className="border border-cream-200 dark:border-forest-600 p-2 text-sm bg-white dark:bg-forest-700 dark:text-cream-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-forest-400" placeholder="MRP" />
+                  <input type="number" value={editForm.price} onChange={e=>setEditForm({...editForm, price: e.target.value})} className="border border-cream-200 dark:border-forest-600 p-2 text-sm bg-white dark:bg-forest-700 dark:text-cream-100 rounded-lg focus:outline-none focus:ring-1 focus:ring-forest-400" placeholder="Price" />
+                  <div className="col-span-2 flex items-center gap-2 border border-cream-200 dark:border-forest-600 p-2 rounded-lg bg-cream-50 dark:bg-forest-700/50">
+                    <label className="text-xs px-3 py-1.5 bg-forest-700 hover:bg-forest-800 text-white font-medium cursor-pointer transition-colors rounded-lg">
+                      Replace Cover
                       <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                     </label>
-                    {editForm.image && <span className="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400">Attached ✔</span>}
+                    {editForm.image && <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Attached ✔</span>}
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <button className="bg-emerald-600 text-white px-3 py-1 rounded text-xs" onClick={handleSave}>Save</button>
-                  <button className="bg-gray-200 dark:bg-forest-600 text-forest-800 dark:text-cream-100 px-3 py-1 rounded text-xs" onClick={() => setEditingId(null)}>Cancel</button>
+                  <button className="bg-forest-700 hover:bg-forest-800 text-white px-4 py-1.5 text-sm font-medium rounded-lg transition-colors" onClick={handleSave}>Save</button>
+                  <button className="border border-cream-200 dark:border-forest-600 px-4 py-1.5 text-sm font-medium text-forest-600 dark:text-cream-400 hover:bg-cream-50 dark:hover:bg-forest-700 rounded-lg transition-colors" onClick={() => setEditingId(null)}>Cancel</button>
                 </div>
               </div>
             ) : (
               <div className="flex-1 flex gap-4 items-center">
                 {b.image ? (
-                  <img src={b.image} alt={b.title} className="w-10 h-14 object-cover rounded shadow-sm flex-shrink-0" />
+                  <img src={b.image} alt={b.title} className="w-12 h-16 object-cover rounded-lg border border-cream-200 dark:border-forest-700 flex-shrink-0" />
                 ) : (
-                  <div className={`w-10 h-14 bg-gradient-to-br ${b.coverColor} rounded shadow-sm flex-shrink-0 flex items-center justify-center text-xs`}>📖</div>
+                  <div className={`w-12 h-16 flex-shrink-0 flex items-center justify-center text-xs font-bold rounded-lg border border-cream-200 dark:border-forest-700 ${b.coverColor || 'bg-cream-100 dark:bg-forest-700'}`}>📖</div>
                 )}
                 <div>
-                  <h4 className="font-bold text-forest-800 dark:text-cream-100">{b.title}</h4>
-                  <p className="text-xs text-forest-500">{b.author} | MRP: ₹{b.mrp}</p>
+                  <h4 className="font-semibold text-sm text-forest-800 dark:text-cream-100">{b.title}</h4>
+                  <p className="text-xs text-forest-400 dark:text-cream-500 mt-0.5">{b.author} | MRP: ₹{b.mrp}</p>
                 </div>
                 <div className="ml-auto text-right mr-4">
-                  <p className="font-bold text-amber-600 dark:text-amber-400">₹{b.price}</p>
-                  <p className="text-xs text-emerald-600 border border-emerald-200 bg-emerald-50 dark:bg-emerald-900/30 dark:border-emerald-700 px-1.5 py-0.5 rounded inline-block mt-1">{b.condition}</p>
+                  <p className="font-bold text-forest-800 dark:text-cream-100">₹{b.price}</p>
+                  <span className="text-[10px] font-medium text-forest-500 dark:text-cream-400 bg-cream-100 dark:bg-forest-700 px-2 py-0.5 rounded-full mt-1 inline-block">{b.condition}</span>
                 </div>
               </div>
             )}
             
             {editingId !== b.id && (
               <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onClick={() => handleEdit(b)} className="px-3 py-2 bg-cream-100 dark:bg-forest-700 text-forest-700 dark:text-cream-300 rounded hover:bg-forest-200">Edit</button>
-                <button onClick={() => deleteInventoryBook(b.id)} className="px-3 py-2 bg-red-100 text-red-600 hover:bg-red-200 rounded"><Trash2 size={16}/></button>
+                <button onClick={() => handleEdit(b)} className="px-3 py-1.5 border border-cream-200 dark:border-forest-600 text-xs font-medium text-forest-600 dark:text-cream-400 hover:bg-cream-50 dark:hover:bg-forest-700 rounded-lg transition-colors">Edit</button>
+                <button onClick={() => deleteInventoryBook(b.id)} className="p-1.5 border border-red-200 dark:border-red-800 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"><Trash2 size={15}/></button>
               </div>
             )}
           </div>
         ))}
-        {filtered.length > 50 && <p className="text-center text-sm text-forest-400 pt-4">Showing 50 of {filtered.length} results. Use search to find more.</p>}
+        {filtered.length > 50 && <p className="text-center text-xs text-forest-400 dark:text-cream-500 pt-6">Showing 50 of {filtered.length} results. Use search to find more.</p>}
       </div>
     </div>
   );
@@ -480,53 +486,53 @@ function PromoTab() {
   return (
     <div className="animate-fade-in space-y-10">
       <section>
-        <h2 className="text-2xl font-bold text-forest-800 dark:text-cream-100 mb-6">Delivery Fees</h2>
-        <form onSubmit={handleDeliverySave} className="bg-white dark:bg-forest-800 p-6 rounded-2xl border border-cream-200 dark:border-forest-700 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <h2 className="font-display font-bold text-2xl text-forest-800 dark:text-cream-100 mb-6">Delivery Fees</h2>
+        <form onSubmit={handleDeliverySave} className="bg-white dark:bg-forest-800 p-6 border border-cream-100 dark:border-forest-700 rounded-2xl shadow-sm grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm mb-1 text-forest-600 dark:text-cream-300">Standard Delivery (₹)</label>
-            <input type="number" value={delSet.standardFee} onChange={e=>setDelSet({...delSet, standardFee: e.target.value})} className="w-full border p-2 rounded bg-cream-50 dark:bg-forest-700 dark:text-white dark:border-forest-600" />
+            <label className="block text-xs font-medium text-forest-500 dark:text-cream-400 mb-2">Standard Delivery (₹)</label>
+            <input type="number" value={delSet.standardFee} onChange={e=>setDelSet({...delSet, standardFee: e.target.value})} className="w-full border border-cream-200 dark:border-forest-600 p-3 bg-white dark:bg-forest-700 dark:text-cream-100 focus:outline-none focus:ring-2 focus:ring-forest-400 text-sm rounded-lg" />
           </div>
           <div>
-            <label className="block text-sm mb-1 text-forest-600 dark:text-cream-300">Express Delivery (₹)</label>
-            <input type="number" value={delSet.expressFee} onChange={e=>setDelSet({...delSet, expressFee: e.target.value})} className="w-full border p-2 rounded bg-cream-50 dark:bg-forest-700 dark:text-white dark:border-forest-600" />
+            <label className="block text-xs font-medium text-forest-500 dark:text-cream-400 mb-2">Express Delivery (₹)</label>
+            <input type="number" value={delSet.expressFee} onChange={e=>setDelSet({...delSet, expressFee: e.target.value})} className="w-full border border-cream-200 dark:border-forest-600 p-3 bg-white dark:bg-forest-700 dark:text-cream-100 focus:outline-none focus:ring-2 focus:ring-forest-400 text-sm rounded-lg" />
           </div>
           <div>
-            <label className="block text-sm mb-1 text-forest-600 dark:text-cream-300">Free Delivery Above (₹)</label>
-            <input type="number" value={delSet.freeAbove} onChange={e=>setDelSet({...delSet, freeAbove: e.target.value})} className="w-full border p-2 rounded bg-cream-50 dark:bg-forest-700 dark:text-white dark:border-forest-600" />
+            <label className="block text-xs font-medium text-forest-500 dark:text-cream-400 mb-2">Free Delivery Above (₹)</label>
+            <input type="number" value={delSet.freeAbove} onChange={e=>setDelSet({...delSet, freeAbove: e.target.value})} className="w-full border border-cream-200 dark:border-forest-600 p-3 bg-white dark:bg-forest-700 dark:text-cream-100 focus:outline-none focus:ring-2 focus:ring-forest-400 text-sm rounded-lg" />
           </div>
-          <div className="md:col-span-3 flex justify-end">
-            <button type="submit" className="btn-primary py-2 px-6">Save Settings</button>
+          <div className="md:col-span-3 flex justify-end mt-2">
+            <button type="submit" className="bg-forest-700 hover:bg-forest-800 text-white py-2.5 px-8 text-sm font-medium rounded-lg transition-colors shadow-sm">Save Settings</button>
           </div>
         </form>
       </section>
 
       <section>
-        <h2 className="text-2xl font-bold text-forest-800 dark:text-cream-100 mb-6">Promo Codes</h2>
-        <div className="bg-white dark:bg-forest-800 p-6 rounded-2xl border border-cream-200 dark:border-forest-700 mb-6">
-          <h3 className="font-bold mb-4 dark:text-cream-100">Create New Promo</h3>
+        <h2 className="font-display font-bold text-2xl text-forest-800 dark:text-cream-100 mb-6">Promo Codes</h2>
+        <div className="bg-white dark:bg-forest-800 p-6 border border-cream-100 dark:border-forest-700 rounded-2xl shadow-sm mb-5">
+          <h3 className="font-semibold text-forest-800 dark:text-cream-100 mb-4">Create New Promo</h3>
           <form onSubmit={handleAddPromo} className="grid grid-cols-2 md:grid-cols-5 gap-3 items-end">
-            <div><label className="text-xs mb-1 block dark:text-cream-300">Code</label><input type="text" value={newPromo.code} onChange={e=>setNewPromo({...newPromo, code: e.target.value})} required className="w-full border p-2 rounded uppercase bg-cream-50 dark:bg-forest-700 dark:text-white dark:border-forest-600" /></div>
-            <div><label className="text-xs mb-1 block dark:text-cream-300">Type</label><select value={newPromo.type} onChange={e=>setNewPromo({...newPromo, type: e.target.value})} className="w-full border p-2 rounded bg-cream-50 dark:bg-forest-700 dark:text-white dark:border-forest-600"><option value="flat">Flat (₹)</option><option value="percent">Percent (%)</option></select></div>
-            <div><label className="text-xs mb-1 block dark:text-cream-300">Discount</label><input type="number" value={newPromo.discount} onChange={e=>setNewPromo({...newPromo, discount: Number(e.target.value)})} required className="w-full border p-2 rounded bg-cream-50 dark:bg-forest-700 dark:text-white dark:border-forest-600" /></div>
-            <div><label className="text-xs mb-1 block dark:text-cream-300">Min Order (₹)</label><input type="number" value={newPromo.minOrder} onChange={e=>setNewPromo({...newPromo, minOrder: Number(e.target.value)})} className="w-full border p-2 rounded bg-cream-50 dark:bg-forest-700 dark:text-white dark:border-forest-600" /></div>
-            <button type="submit" className="btn-amber py-2">Add</button>
+            <div><label className="text-xs font-medium text-forest-500 dark:text-cream-400 mb-2 block">Code</label><input type="text" value={newPromo.code} onChange={e=>setNewPromo({...newPromo, code: e.target.value})} required className="w-full border border-cream-200 dark:border-forest-600 p-2.5 uppercase bg-white dark:bg-forest-700 dark:text-cream-100 focus:outline-none focus:ring-2 focus:ring-forest-400 text-sm rounded-lg" /></div>
+            <div><label className="text-xs font-medium text-forest-500 dark:text-cream-400 mb-2 block">Type</label><select value={newPromo.type} onChange={e=>setNewPromo({...newPromo, type: e.target.value})} className="w-full border border-cream-200 dark:border-forest-600 p-2.5 bg-white dark:bg-forest-700 dark:text-cream-100 focus:outline-none focus:ring-1 focus:ring-forest-400 text-sm rounded-lg appearance-none"><option value="flat">Flat (₹)</option><option value="percent">Percent (%)</option></select></div>
+            <div><label className="text-xs font-medium text-forest-500 dark:text-cream-400 mb-2 block">Discount</label><input type="number" value={newPromo.discount} onChange={e=>setNewPromo({...newPromo, discount: Number(e.target.value)})} required className="w-full border border-cream-200 dark:border-forest-600 p-2.5 bg-white dark:bg-forest-700 dark:text-cream-100 focus:outline-none focus:ring-2 focus:ring-forest-400 text-sm rounded-lg" /></div>
+            <div><label className="text-xs font-medium text-forest-500 dark:text-cream-400 mb-2 block">Min Order (₹)</label><input type="number" value={newPromo.minOrder} onChange={e=>setNewPromo({...newPromo, minOrder: Number(e.target.value)})} className="w-full border border-cream-200 dark:border-forest-600 p-2.5 bg-white dark:bg-forest-700 dark:text-cream-100 focus:outline-none focus:ring-2 focus:ring-forest-400 text-sm rounded-lg" /></div>
+            <button type="submit" className="bg-forest-700 hover:bg-forest-800 text-white py-2.5 text-sm font-medium rounded-lg transition-colors shadow-sm">Add</button>
           </form>
         </div>
 
         <div className="space-y-3">
           {promoCodes.map(p => (
-            <div key={p.id} className={`p-4 rounded-xl border flex justify-between items-center ${p.active ? 'bg-white border-emerald-200 dark:bg-forest-800 dark:border-emerald-900/50' : 'bg-gray-50 border-gray-200 opacity-60 dark:bg-forest-900 dark:border-forest-800'}`}>
-              <div>
-                <span className="font-bold text-lg dark:text-cream-100 mr-3">{p.code}</span>
-                <span className="bg-cream-100 text-forest-700 dark:bg-forest-700 dark:text-cream-300 px-2 py-0.5 rounded text-xs">
-                  {p.type === 'percent' ? `${p.discount}% OFF` : `₹${p.discount} OFF`} (Min: ₹{p.minOrder})
+            <div key={p.id} className={`p-4 border border-cream-100 dark:border-forest-700 rounded-xl flex justify-between items-center bg-white dark:bg-forest-800 ${!p.active ? 'opacity-50' : ''}`}>
+              <div className="flex items-center gap-3">
+                <span className="font-display font-bold text-lg text-forest-800 dark:text-cream-100">{p.code}</span>
+                <span className="bg-forest-100 dark:bg-forest-700 text-forest-700 dark:text-cream-300 px-2.5 py-0.5 text-xs font-medium rounded-full">
+                  {p.type === 'percent' ? `${p.discount}% OFF` : `₹${p.discount} OFF`} · Min ₹{p.minOrder}
                 </span>
               </div>
               <div className="flex gap-2">
-                <button onClick={() => updatePromoCode(p.id, { active: !p.active })} className="px-3 py-1 bg-cream-200 dark:bg-forest-700 hover:bg-cream-300 rounded text-sm text-forest-800 dark:text-cream-100">
+                <button onClick={() => updatePromoCode(p.id, { active: !p.active })} className="px-3 py-1.5 border border-cream-200 dark:border-forest-600 text-xs font-medium text-forest-600 dark:text-cream-400 hover:bg-cream-50 dark:hover:bg-forest-700 rounded-lg transition-colors">
                   {p.active ? 'Disable' : 'Enable'}
                 </button>
-                <button onClick={() => deletePromoCode(p.id)} className="px-3 py-1 bg-red-100 hover:bg-red-200 text-red-600 rounded text-sm">Delete</button>
+                <button onClick={() => deletePromoCode(p.id)} className="px-3 py-1.5 border border-red-200 dark:border-red-800 text-xs font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">Delete</button>
               </div>
             </div>
           ))}
@@ -562,43 +568,44 @@ function SecurityTab() {
 
   return (
     <div className="animate-fade-in max-w-md">
-      <h2 className="text-2xl font-bold text-forest-800 dark:text-cream-100 mb-6">General Settings</h2>
+      <h2 className="font-display font-bold text-2xl text-forest-800 dark:text-cream-100 mb-6">General Settings</h2>
       
-      <div className="bg-white dark:bg-forest-800 p-6 rounded-2xl border border-cream-200 dark:border-forest-700 mb-6">
-        <h3 className="font-bold mb-4 dark:text-cream-100">Support Contact</h3>
-        <p className="text-sm text-forest-500 dark:text-cream-400 mb-4">Update the WhatsApp number where support queries and manual orders are routed. (Include country code, no + sign)</p>
+      <div className="bg-white dark:bg-forest-800 p-6 border border-cream-100 dark:border-forest-700 rounded-2xl shadow-sm mb-5">
+        <h3 className="font-semibold text-forest-800 dark:text-cream-100 mb-1">Support Contact</h3>
+        <p className="text-xs text-forest-400 dark:text-cream-500 mb-4">Update the WhatsApp number for support queries. (Include country code, no + sign)</p>
         <div className="flex gap-2">
           <input 
             type="text" 
             value={whatsappNumber} 
             onChange={e => setWhatsappNumber(e.target.value)} 
             placeholder="e.g. 919999999999"
-            className="flex-1 border p-2 rounded bg-cream-50 dark:bg-forest-700 dark:text-white dark:border-forest-600" 
+            className="flex-1 border border-cream-200 dark:border-forest-600 p-3 bg-white dark:bg-forest-700 dark:text-cream-100 focus:outline-none focus:ring-2 focus:ring-forest-400 text-sm rounded-lg" 
           />
-          <button onClick={() => alert('WhatsApp number updated!')} className="btn-primary py-2 px-6">Save</button>
+          <button onClick={() => alert('WhatsApp number updated!')} className="bg-forest-700 hover:bg-forest-800 text-white py-3 px-5 text-sm font-medium rounded-lg transition-colors shadow-sm">Save</button>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-forest-800 p-6 rounded-2xl border border-cream-200 dark:border-forest-700">
-        <p className="text-sm text-forest-500 dark:text-cream-400 mb-6">Update the master admin login credentials. Ensure you store these safely.</p>
+      <div className="bg-white dark:bg-forest-800 p-6 border border-cream-100 dark:border-forest-700 rounded-2xl shadow-sm">
+        <h3 className="font-semibold text-forest-800 dark:text-cream-100 mb-1">Admin Credentials</h3>
+        <p className="text-xs text-forest-400 dark:text-cream-500 mb-5">Update the master admin login. Store credentials safely.</p>
         
-        {msg && <div className="mb-4 p-3 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-sm">{msg}</div>}
-        {errorMsg && <div className="mb-4 p-3 bg-red-50 text-red-700 border border-red-200 rounded-lg text-sm">{errorMsg}</div>}
+        {msg && <div className="mb-4 p-3 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 text-sm rounded-xl">{msg}</div>}
+        {errorMsg && <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm rounded-xl">{errorMsg}</div>}
         
         <form onSubmit={handleUpdate} className="space-y-4">
           <div>
-            <label className="block text-sm mb-1 dark:text-cream-300">Current Password</label>
-            <input type="password" value={currentP} onChange={e=>setCurrentP(e.target.value)} required className="w-full border p-2 rounded bg-cream-50 dark:bg-forest-700 dark:text-white dark:border-forest-600" />
+            <label className="block text-xs font-medium text-forest-500 dark:text-cream-400 mb-1.5">Current Password</label>
+            <input type="password" value={currentP} onChange={e=>setCurrentP(e.target.value)} required className="w-full border border-cream-200 dark:border-forest-600 p-3 bg-white dark:bg-forest-700 dark:text-cream-100 focus:outline-none focus:ring-2 focus:ring-forest-400 text-sm rounded-lg" />
           </div>
           <div>
-            <label className="block text-sm mb-1 dark:text-cream-300">New Username</label>
-            <input type="text" value={u} onChange={e=>setU(e.target.value)} required placeholder={`Current: ${adminCreds.username}`} className="w-full border p-2 rounded bg-cream-50 dark:bg-forest-700 dark:text-white dark:border-forest-600" />
+            <label className="block text-xs font-medium text-forest-500 dark:text-cream-400 mb-1.5">New Username</label>
+            <input type="text" value={u} onChange={e=>setU(e.target.value)} required placeholder={`Current: ${adminCreds.username}`} className="w-full border border-cream-200 dark:border-forest-600 p-3 bg-white dark:bg-forest-700 dark:text-cream-100 focus:outline-none focus:ring-2 focus:ring-forest-400 text-sm rounded-lg" />
           </div>
           <div>
-            <label className="block text-sm mb-1 dark:text-cream-300">New Password</label>
-            <input type="password" value={p} onChange={e=>setP(e.target.value)} required className="w-full border p-2 rounded bg-cream-50 dark:bg-forest-700 dark:text-white dark:border-forest-600" />
+            <label className="block text-xs font-medium text-forest-500 dark:text-cream-400 mb-1.5">New Password</label>
+            <input type="password" value={p} onChange={e=>setP(e.target.value)} required className="w-full border border-cream-200 dark:border-forest-600 p-3 bg-white dark:bg-forest-700 dark:text-cream-100 focus:outline-none focus:ring-2 focus:ring-forest-400 text-sm rounded-lg" />
           </div>
-          <button type="submit" className="btn-amber w-full py-2">Update Credentials</button>
+          <button type="submit" className="w-full bg-forest-700 hover:bg-forest-800 text-white py-3 mt-2 text-sm font-medium rounded-lg transition-colors shadow-sm">Update Credentials</button>
         </form>
       </div>
     </div>
