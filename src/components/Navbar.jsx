@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { ShoppingCart, BookOpen, LogOut, Package } from 'lucide-react';
+import { ShoppingCart, BookOpen, LogOut, Package, User } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import AuthModal from './AuthModal';
@@ -70,6 +70,13 @@ export default function Navbar() {
                     <p className="text-[10px] text-neutral-500 truncate">{currentUser.email}</p>
                   </div>
                   <div className="p-1">
+                    <Link
+                      to="/account"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="w-full text-left px-3 py-2.5 text-xs font-bold text-forest-700 hover:bg-neutral-100 rounded-lg flex items-center gap-2 uppercase tracking-wider transition-colors"
+                    >
+                      <User size={14} /> My Account
+                    </Link>
                     <Link
                       to="/orders"
                       onClick={() => setUserMenuOpen(false)}

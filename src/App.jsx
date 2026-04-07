@@ -15,6 +15,7 @@ import Buy from './pages/Buy';
 import Sell from './pages/Sell';
 import Checkout from './pages/Checkout';
 import Orders from './pages/Orders';
+import Account from './pages/Account';
 import About from './pages/About';
 import AdminPortal from './pages/AdminPortal';
 import BookDetail from './pages/BookDetail';
@@ -63,6 +64,7 @@ function MainLayout() {
           <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
           <Route path="/sell"   element={<ProtectedRoute><Sell /></ProtectedRoute>}   />
           <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+          <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
           <Route path="/about"  element={<About />}  />
         </Routes>
       </main>

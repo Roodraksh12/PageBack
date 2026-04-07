@@ -1,19 +1,24 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { CreditCard, Truck, MapPin, CheckCircle, Package } from 'lucide-react';
 
 export default function Checkout() {
   const { cartItems, cartTotal, promoDiscount, deliveryFee, cartFinalTotal, placeOrder } = useCart();
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({
-    fullName: '',
-    phone: '',
-    pinCode: '',
-    city: '',
-    state: '',
-    address: ''
+  const { currentUser } = useAuth();
+  const [form, setForm] = useState(() => {
+    if (currentUser) {
+      const saved = localStorage.getItem(`pb_user_address_${currentUser.id}`);
+      if (saved) {
+        try { return JSON.parse(saved); } catch (e) {}
+      }
+    }
+    return {
+      fullName: '', phone: '', pinCode: '', city: '', state: '', address: ''
+    };
   });
   
   const [paymentMethod, setPaymentMethod] = useState('');
