@@ -103,10 +103,16 @@ export function CartProvider({ children }) {
         { status: 'placed', label: 'Order Placed', time: new Date().toISOString() }
       ]
     };
-    await setDoc(doc(db, 'orders', orderId), order);
-    clearCart();
-    setCartOpen(false);
-    return orderId;
+    try {
+      await setDoc(doc(db, 'orders', orderId), order);
+      clearCart();
+      setCartOpen(false);
+      return orderId;
+    } catch (error) {
+      console.error("Error placing order:", error);
+      alert("Failed to place order: " + error.message);
+      return null;
+    }
   };
 
   return (
