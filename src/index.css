@@ -54,7 +54,7 @@
     @apply bg-white border border-cream-200 rounded-xl shadow-sm transition-all duration-200;
   }
   .book-card:hover {
-    @apply border-forest-500 shadow-md;
+    @apply border-neutral-300 shadow-md;
   }
 
   /* Condition badge */

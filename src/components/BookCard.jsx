@@ -36,12 +36,15 @@ export default function BookCard({ book, onView }) {
 
   return (
     <div className="book-card flex flex-col group">
-      {/* Cover */}
-      <div className="relative overflow-hidden h-52 flex-shrink-0">
+      {/* Cover — fully clickable */}
+      <div
+        className="relative overflow-hidden h-52 flex-shrink-0 cursor-pointer"
+        onClick={() => navigate(`/book/${book.id}`)}
+      >
         <img
           src={coverUrl}
           alt={book.title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
         />
         {/* Fallback minimal cover */}
@@ -51,15 +54,6 @@ export default function BookCard({ book, onView }) {
         >
           <p className="font-bold text-center text-sm uppercase tracking-wider">{book.title}</p>
           <p className="text-xs mt-2 text-neutral-500">{book.author}</p>
-        </div>
-
-        <div className="absolute inset-0 bg-black/60 transition-all duration-300 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 backdrop-blur-sm">
-          <button
-            onClick={() => navigate(`/book/${book.id}`)}
-            className="bg-white text-black px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-neutral-200 transition-colors"
-          >
-            <Eye size={14} className="inline mr-1" /> View
-          </button>
         </div>
 
         {/* Condition badge */}
@@ -76,7 +70,10 @@ export default function BookCard({ book, onView }) {
       {/* Info */}
       <div className="p-4 flex flex-col flex-1 border-t border-transparent group-hover:border-neutral-200 dark:group-hover:border-neutral-700 transition-colors">
         <p className="text-[10px] uppercase tracking-widest text-neutral-400 mb-1">{book.genre}</p>
-        <h3 className="font-bold text-neutral-900 dark:text-neutral-100 text-base leading-snug line-clamp-2 mb-1">
+        <h3 
+          className="font-bold text-neutral-900 dark:text-neutral-100 text-base leading-snug line-clamp-2 mb-1 cursor-pointer hover:underline"
+          onClick={() => navigate(`/book/${book.id}`)}
+        >
           {book.title}
         </h3>
         <p className="text-xs text-neutral-500 mb-4">{book.author}</p>
