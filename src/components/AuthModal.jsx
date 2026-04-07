@@ -41,23 +41,23 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode = 'login'
 
   return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-forest-900/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       
-      <div className="relative w-full max-w-md max-h-[95vh] overflow-y-auto bg-cream-50 dark:bg-forest-900 flex flex-col rounded-3xl shadow-warm border border-cream-200 dark:border-forest-700 animate-fade-in">
-        <button onClick={onClose} className="absolute top-4 right-4 text-forest-500 hover:text-forest-800 dark:text-cream-400 dark:hover:text-cream-100 z-10 transition-colors">
+      <div className="relative w-full max-w-md max-h-[95vh] overflow-y-auto bg-white dark:bg-black flex flex-col border border-black dark:border-white animate-fade-in">
+        <button onClick={onClose} className="absolute top-4 right-4 text-neutral-400 hover:text-black dark:hover:text-white z-10 transition-colors">
           <X size={20} />
         </button>
 
         <div className="p-8">
-          <h2 className="font-display font-bold text-3xl text-forest-800 dark:text-cream-100 mb-2">
+          <h2 className="font-bold text-3xl uppercase tracking-tighter text-black dark:text-white mb-2">
             {mode === 'login' ? 'Welcome Back' : 'Join PageBack'}
           </h2>
-          <p className="text-forest-500 dark:text-cream-400 text-sm mb-6">
+          <p className="text-neutral-500 text-[10px] font-bold uppercase tracking-widest mb-6 leading-relaxed">
             {mode === 'login' ? 'Log in to continue your reading journey.' : 'Create an account to track orders and sell books.'}
           </p>
 
           {/* Social Auth */}
-          <button onClick={handleGoogleLogin} className="w-full flex items-center justify-center gap-3 bg-white dark:bg-forest-800 border border-cream-200 dark:border-forest-600 rounded-xl px-4 py-3 text-sm font-medium text-forest-800 dark:text-cream-100 hover:shadow-sm transition-all mb-6">
+          <button onClick={handleGoogleLogin} className="w-full flex items-center justify-center gap-3 bg-transparent border border-black dark:border-white px-4 py-4 text-xs font-bold uppercase tracking-widest text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors mb-6">
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
               <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
@@ -68,68 +68,68 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode = 'login'
           </button>
 
           <div className="flex items-center gap-4 mb-6">
-            <div className="h-px flex-1 bg-cream-200 dark:bg-forest-700" />
-            <span className="text-xs font-medium text-forest-400 dark:text-cream-500 uppercase tracking-wider">OR</span>
-            <div className="h-px flex-1 bg-cream-200 dark:bg-forest-700" />
+            <div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" />
+            <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest">OR</span>
+            <div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" />
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-xl text-sm text-red-600 dark:text-red-400">
+              <div className="p-4 bg-transparent border border-red-500 text-xs font-bold uppercase tracking-widest text-red-600 dark:text-red-400">
                 {error}
               </div>
             )}
 
             {mode === 'register' && (
               <div className="relative">
-                <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-forest-400" />
+                <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
                 <input
                   type="text" required placeholder="Full Name"
                   value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
-                  className="w-full pl-12 pr-4 py-3 rounded-xl border border-cream-300 dark:border-forest-600 bg-white dark:bg-forest-800 text-forest-800 dark:text-cream-100 placeholder-forest-300 dark:placeholder-forest-500 focus:outline-none focus:ring-2 focus:ring-forest-400 text-sm"
+                  className="w-full pl-12 pr-4 py-3 border border-black dark:border-white bg-transparent text-black dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-black text-sm"
                 />
               </div>
             )}
 
             <div className="relative">
-              <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-forest-400" />
+              <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
               <input
                 type="email" required placeholder="Email Address"
                 value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
-                className="w-full pl-12 pr-4 py-3 rounded-xl border border-cream-300 dark:border-forest-600 bg-white dark:bg-forest-800 text-forest-800 dark:text-cream-100 placeholder-forest-300 dark:placeholder-forest-500 focus:outline-none focus:ring-2 focus:ring-forest-400 text-sm"
+                className="w-full pl-12 pr-4 py-3 border border-black dark:border-white bg-transparent text-black dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-black text-sm"
               />
             </div>
 
             <div className="relative">
-              <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-forest-400" />
+              <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
               <input
                 type="password" required placeholder="Password"
                 value={form.password} onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
-                className="w-full pl-12 pr-4 py-3 rounded-xl border border-cream-300 dark:border-forest-600 bg-white dark:bg-forest-800 text-forest-800 dark:text-cream-100 placeholder-forest-300 dark:placeholder-forest-500 focus:outline-none focus:ring-2 focus:ring-forest-400 text-sm"
+                className="w-full pl-12 pr-4 py-3 border border-black dark:border-white bg-transparent text-black dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-black text-sm"
               />
             </div>
 
             {mode === 'register' && (
               <div className="relative">
-                <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-forest-400" />
+                <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
                 <input
                   type="password" required placeholder="Confirm Password"
                   value={form.confirm} onChange={e => setForm(p => ({ ...p, confirm: e.target.value }))}
-                  className="w-full pl-12 pr-4 py-3 rounded-xl border border-cream-300 dark:border-forest-600 bg-white dark:bg-forest-800 text-forest-800 dark:text-cream-100 placeholder-forest-300 dark:placeholder-forest-500 focus:outline-none focus:ring-2 focus:ring-forest-400 text-sm"
+                  className="w-full pl-12 pr-4 py-3 border border-black dark:border-white bg-transparent text-black dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-black text-sm"
                 />
               </div>
             )}
 
-            <button type="submit" className="w-full btn-primary flex justify-center items-center gap-2 py-3 mt-2">
+            <button type="submit" className="w-full bg-black text-white dark:bg-white dark:text-black flex justify-center items-center gap-2 py-4 text-xs font-bold uppercase tracking-widest mt-6 hover:opacity-80 transition-opacity">
               {mode === 'login' ? <><LogIn size={18} /> Log In</> : <><UserPlus size={18} /> Create Account</>}
             </button>
           </form>
 
-          <p className="text-center text-sm text-forest-500 dark:text-cream-400 mt-6">
+          <p className="text-center text-[10px] font-bold uppercase tracking-widest text-neutral-500 mt-6">
             {mode === 'login' ? "Don't have an account? " : "Already have an account? "}
             <button
               onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError(''); }}
-              className="text-amber-500 font-semibold hover:underline"
+              className="text-black dark:text-white ml-1 hover:underline"
             >
               {mode === 'login' ? 'Sign up' : 'Log in'}
             </button>
