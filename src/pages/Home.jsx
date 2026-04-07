@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, ChevronLeft, ChevronRight, Star, Leaf, TrendingUp, Shield, Zap } from 'lucide-react';
 import { books, genres, testimonials, whyPageBack } from '../data/books';
 import { useApp } from '../context/AppContext';
 import BookCard from '../components/BookCard';
-import BookModal from '../components/BookModal';
 
 function useCountUp(target, duration = 2000, start = false) {
   const [count, setCount] = useState(0);
@@ -54,7 +53,6 @@ function StatsBar() {
 
 function FeaturedCarousel() {
   const [idx, setIdx] = useState(0);
-  const [selected, setSelected] = useState(null);
   const featured = books.filter(b => b.condition === 'Like New' || b.tags?.includes('bestseller'));
   const visible = 3;
   const max = featured.length - visible;
@@ -85,7 +83,7 @@ function FeaturedCarousel() {
         >
           {featured.map(b => (
             <div key={b.id} className="w-full flex-shrink-0" style={{ width: `calc(${100 / visible}% - 16px)` }}>
-              <BookCard book={b} onView={setSelected} />
+              <BookCard book={b} />
             </div>
           ))}
         </div>
@@ -95,19 +93,17 @@ function FeaturedCarousel() {
       <div className="md:hidden overflow-x-auto flex gap-4 pb-2 snap-x snap-mandatory mt-0">
         {featured.map(b => (
           <div key={b.id} className="snap-start flex-shrink-0 w-64">
-            <BookCard book={b} onView={setSelected} />
+            <BookCard book={b} />
           </div>
         ))}
       </div>
-
-      {selected && <BookModal book={selected} onClose={() => setSelected(null)} />}
     </section>
   );
 }
 
 export default function Home() {
   const { envImpact, totalBooksSite } = useApp();
-  const [selected, setSelected] = useState(null);
+  const navigate = useNavigate();
 
   const heroBooks = books.slice(0, 4);
 
@@ -148,22 +144,30 @@ export default function Home() {
 
           {/* Hero book grid */}
           <div className="hidden lg:grid grid-cols-2 gap-4 animate-float">
-            {heroBooks.map((book, i) => (
+            {heroBooks.map((book, i) => {
+              const coverUrl = book.image || `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`;
+              return (
               <div
                 key={book.id}
-                className={`bg-neutral-100 dark:bg-neutral-900 border border-black dark:border-white p-6 flex flex-col justify-end min-h-[200px] cursor-pointer hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors ${i % 2 === 1 ? 'mt-8' : ''}`}
-                onClick={() => setSelected(book)}
+                className={`relative group overflow-hidden bg-neutral-100 dark:bg-neutral-900 border border-black dark:border-white min-h-[250px] cursor-pointer hover:border-black dark:hover:border-white transition-colors ${i % 2 === 1 ? 'mt-8' : ''}`}
+                onClick={() => navigate(`/book/${book.id}`)}
               >
-                <div>
+                <img 
+                  src={coverUrl} 
+                  alt={book.title} 
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                  onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-6 flex flex-col justify-end text-white">
                   <p className="font-bold text-xl leading-tight uppercase tracking-tight">{book.title}</p>
-                  <p className="opacity-70 text-sm mt-2">{book.author}</p>
-                  <div className="flex items-center gap-2 mt-4">
+                  <p className="opacity-80 text-sm mt-2">{book.author}</p>
+                  <div className="flex items-center gap-2 mt-3 text-white">
                     <span className="font-bold text-lg">₹{book.price}</span>
                     <span className="opacity-50 line-through text-sm">₹{book.mrp}</span>
                   </div>
                 </div>
               </div>
-            ))}
+            )})}
           </div>
         </div>
       </section>
@@ -326,8 +330,6 @@ export default function Home() {
           </Link>
         </div>
       </section>
-
-      {selected && <BookModal book={selected} onClose={() => setSelected(null)} />}
     </div>
   );
 }
