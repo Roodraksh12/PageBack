@@ -210,8 +210,7 @@ const lblCls     = "block text-[10px] font-bold uppercase tracking-widest text-f
 
 // ────────────────────────────────────────────────────────
 function OrdersTab() {
-  const { orders, updateOrderStatus } = useAdmin();
-  const statuses = ['placed', 'confirmed', 'processing', 'shipped', 'outForDelivery', 'delivered', 'cancelled'];
+  const { orders, updateOrderStatus, STATUS_ORDER } = useAdmin();
 
   return (
     <div className="animate-fade-in">
@@ -227,9 +226,19 @@ function OrdersTab() {
                 <h3 className="font-bold text-forest-700 dark:text-cream-100 text-sm">{o.id}</h3>
                 <p className="text-xs text-forest-500 dark:text-cream-500 mt-0.5">{new Date(o.date).toLocaleString()}</p>
               </div>
-              <select value={o.status} onChange={e => updateOrderStatus(o.id, e.target.value)}
+              <select value={o.status} 
+                onChange={e => updateOrderStatus(o.id, e.target.value)}
                 className="border border-cream-300 dark:border-forest-600 bg-white dark:bg-forest-700 text-forest-700 dark:text-cream-200 px-3 py-1.5 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-forest-500 appearance-none">
-                {statuses.map(s => <option key={s} value={s}>{s}</option>)}
+                {STATUS_ORDER.map((s, idx) => {
+                  const currentIdx = STATUS_ORDER.indexOf(o.status);
+                  const isNext = idx === currentIdx + 1;
+                  const isCurrent = s === o.status;
+                  
+                  if (isCurrent || isNext) {
+                    return <option key={s} value={s}>{s}</option>;
+                  }
+                  return null;
+                })}
               </select>
             </div>
             <div className="space-y-2 mb-4">

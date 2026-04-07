@@ -47,19 +47,31 @@ export function AdminProvider({ children }) {
   // ── Orders ──
   const refreshOrders = () => setOrders(ls('pb_orders', []));
 
+  const STATUS_ORDER = ['placed', 'confirmed', 'processing', 'shipped', 'outForDelivery', 'delivered', 'cancelled'];
   const STATUS_LABELS = {
     placed: 'Order Placed', confirmed: 'Confirmed', processing: 'Processing',
     shipped: 'Shipped', outForDelivery: 'Out for Delivery', delivered: 'Delivered', cancelled: 'Cancelled',
   };
   const updateOrderStatus = (orderId, newStatus) => {
-    setOrders(prev => prev.map(o =>
-      o.id !== orderId ? o : {
+    setOrders(prev => prev.map(o => {
+      if (o.id !== orderId) return o;
+      
+      const currentIdx = STATUS_ORDER.indexOf(o.status);
+      const nextIdx = STATUS_ORDER.indexOf(newStatus);
+      
+      // Only allow updating to the same status (no-op) or the immediate next status
+      if (nextIdx !== currentIdx && nextIdx !== currentIdx + 1) {
+        console.warn(`Attempted invalid status transition from ${o.status} to ${newStatus}`);
+        return o;
+      }
+
+      return {
         ...o, status: newStatus,
         statusHistory: [...(o.statusHistory || []), {
           status: newStatus, label: STATUS_LABELS[newStatus] || newStatus, time: new Date().toISOString()
         }]
-      }
-    ));
+      };
+    }));
   };
 
   // ── Sell Requests ──
@@ -128,7 +140,7 @@ export function AdminProvider({ children }) {
   return (
     <AdminContext.Provider value={{
       adminLoggedIn, adminLogin, adminLogout, changeAdminCredentials, adminCreds,
-      orders, refreshOrders, updateOrderStatus,
+      orders, refreshOrders, updateOrderStatus, STATUS_ORDER,
       sellRequests, addSellRequest, updateSellRequest,
       inventory, updateInventoryBook, addInventoryBook, deleteInventoryBook, importCSV,
       promoCodes, addPromoCode, updatePromoCode, deletePromoCode,
