@@ -47,7 +47,7 @@ export default function BookDetail() {
   const inCart = cartItems.some(i => i.id === book.id);
   const savings = book.mrp - book.price;
   const pct = Math.round((savings / book.mrp) * 100);
-  const coverUrl = book.image || `https://covers.openlibrary.org/b/isbn/${book.isbn}-L.jpg`;
+  const coverUrl = book.image || '';
   const cStyle = conditionColors[book.condition] || conditionColors['Good'];
   const demand = demandLabels[book.demandLevel] || demandLabels['low'];
   const waLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
@@ -234,7 +234,7 @@ export default function BookDetail() {
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {similar.map(b => {
-                const sImg = b.image || `https://covers.openlibrary.org/b/isbn/${b.isbn}-M.jpg`;
+                const sImg = b.image || '';
                 const sPct = Math.round(((b.mrp - b.price) / b.mrp) * 100);
                 return (
                   <Link

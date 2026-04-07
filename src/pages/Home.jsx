@@ -105,69 +105,36 @@ export default function Home() {
   const { envImpact, totalBooksSite } = useApp();
   const navigate = useNavigate();
 
-  const heroBooks = books.slice(0, 4);
-
   return (
     <div className="page-enter">
       {/* HERO */}
-      <section className="bg-white dark:bg-black text-black dark:text-white min-h-[85vh] flex items-center border-b border-black dark:border-white">
-        <div className="section-pad grid lg:grid-cols-2 gap-12 items-center w-full">
-          <div className="animate-fade-in">
-            <h1 className="font-bold text-6xl md:text-8xl leading-[0.9] tracking-tighter mb-8 uppercase">
-              Exam<br />
-              Prep<br />
-              <span className="text-neutral-500">Books</span>
-            </h1>
+      <section className="bg-white dark:bg-black text-black dark:text-white min-h-[85vh] flex flex-col items-center justify-center border-b border-black dark:border-white text-center">
+        <div className="section-pad max-w-4xl animate-fade-in flex flex-col items-center">
+          <h1 className="font-bold text-6xl md:text-8xl lg:text-9xl leading-[0.9] tracking-tighter mb-8 uppercase flex flex-col">
+            <span>Exam Prep</span>
+            <span className="text-neutral-500">Books</span>
+          </h1>
 
-            <p className="text-forest-800 text-lg md:text-xl font-medium mb-10 max-w-md">
-              PageBack is India's largest marketplace for used competitive exam materials. Buy cheaply to start preparing, sell instantly when you clear.
-            </p>
+          <p className="text-forest-800 text-lg md:text-2xl font-medium mb-12 max-w-2xl leading-relaxed">
+            PageBack is India's largest marketplace for used competitive exam materials. Buy cheaply to start preparing, sell instantly when you clear.
+          </p>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/buy" className="btn-primary flex items-center justify-center gap-2 text-lg px-8 py-5 uppercase tracking-widest">
-                Browse Books <ArrowRight size={18} />
-              </Link>
-              <Link to="/sell" className="btn-outline flex items-center justify-center text-lg px-8 py-5 uppercase tracking-widest">
-                Sell Your Stack
-              </Link>
-            </div>
-
-            {/* Trust badges */}
-            <div className="flex flex-wrap gap-2 mt-12">
-              {['JEE / NEET', 'UPSC / SSC', 'Verified Editions', 'Fast Delivery'].map(b => (
-                <span key={b} className="border border-forest-800 text-xs px-3 py-1 text-forest-800 font-bold uppercase tracking-widest">
-                  {b}
-                </span>
-              ))}
-            </div>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center w-full sm:w-auto">
+            <Link to="/buy" className="btn-primary flex items-center justify-center gap-2 text-lg px-10 py-5 uppercase tracking-widest">
+              Browse Books <ArrowRight size={18} />
+            </Link>
+            <Link to="/sell" className="btn-outline flex items-center justify-center text-lg px-10 py-5 uppercase tracking-widest">
+              Sell Your Stack
+            </Link>
           </div>
 
-          {/* Hero book grid */}
-          <div className="hidden lg:grid grid-cols-2 gap-4 animate-float">
-            {heroBooks.map((book, i) => {
-              const coverUrl = book.image || `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`;
-              return (
-              <div
-                key={book.id}
-                className={`relative group overflow-hidden bg-neutral-100 dark:bg-neutral-900 border border-black dark:border-white min-h-[250px] cursor-pointer hover:border-black dark:hover:border-white transition-colors ${i % 2 === 1 ? 'mt-8' : ''}`}
-                onClick={() => navigate(`/book/${book.id}`)}
-              >
-                <img 
-                  src={coverUrl} 
-                  alt={book.title} 
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
-                  onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-6 flex flex-col justify-end text-white">
-                  <p className="font-bold text-xl leading-tight uppercase tracking-tight">{book.title}</p>
-                  <p className="opacity-80 text-sm mt-2">{book.author}</p>
-                  <div className="flex items-center gap-2 mt-3 text-white">
-                    <span className="font-bold text-lg">₹{book.price}</span>
-                    <span className="opacity-50 line-through text-sm">₹{book.mrp}</span>
-                  </div>
-                </div>
-              </div>
-            )})}
+          {/* Trust badges */}
+          <div className="flex flex-wrap justify-center gap-3 mt-16">
+            {['JEE / NEET', 'UPSC / SSC', 'Verified Editions', 'Fast Delivery'].map(b => (
+              <span key={b} className="border border-forest-800 text-xs px-4 py-2 text-forest-800 font-bold uppercase tracking-widest shadow-sm">
+                {b}
+              </span>
+            ))}
           </div>
         </div>
       </section>
