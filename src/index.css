@@ -18,7 +18,7 @@
   }
 
   body {
-    @apply font-sans bg-cream-100 text-forest-700 antialiased;
+    @apply font-sans bg-cream-100 text-forest-800 antialiased;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 
@@ -65,13 +65,13 @@
 
   /* Buttons */
   .btn-primary {
-    @apply bg-forest-700 hover:bg-forest-800 text-white font-bold px-6 py-3 rounded-lg transition-colors active:bg-forest-900 shadow-sm;
+    @apply bg-forest-800 hover:bg-forest-900 text-cream-50 font-bold px-6 py-3 rounded-lg transition-colors active:bg-forest-950 shadow-sm;
   }
   .btn-amber {
     @apply bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-lg transition-colors active:bg-amber-700 shadow-sm;
   }
   .btn-outline {
-    @apply border-2 border-forest-700 text-forest-700 hover:bg-forest-700 hover:text-white font-bold px-6 py-3 rounded-lg transition-colors shadow-sm;
+    @apply border-2 border-forest-800 text-forest-800 hover:bg-forest-800 hover:text-cream-50 font-bold px-6 py-3 rounded-lg transition-colors shadow-sm;
   }
 
   /* Section */

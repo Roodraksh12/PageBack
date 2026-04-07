@@ -1,0 +1,29 @@
+﻿commit 7ca8dd098c1439e72d9cd529e491840de89b8165
+Author: Your Name <you@example.com>
+Date:   Tue Apr 7 16:20:14 2026 +0530
+
+    feat: full book detail page replaces modal popup
+
+commit 1ab9ced36a88c6a0a5c877fca7388a5bfcbd3621
+Author: Your Name <you@example.com>
+Date:   Tue Apr 7 16:15:14 2026 +0530
+
+    fix: BookModal also uses admin-uploaded image over ISBN cover
+
+commit 373d3776889db8f89dc7ffaae2b94b83380efc0f
+Author: Your Name <you@example.com>
+Date:   Tue Apr 7 16:13:32 2026 +0530
+
+    fix: consumer portal now reads live admin inventory with images
+
+commit b5e5aba83f268e9049b2f01b4a99c6ae50c98753
+Author: Your Name <you@example.com>
+Date:   Tue Apr 7 16:09:57 2026 +0530
+
+    feat: admin auto-logout after 30s inactivity with 10s warning
+
+commit b0e8b0a859591e4e7119c721fd5483ded6b2676e
+Author: Your Name <you@example.com>
+Date:   Tue Apr 7 16:02:09 2026 +0530
+
+    chore: trigger redeploy with Firebase env vars
