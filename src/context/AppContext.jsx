@@ -1,4 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { collection, doc, onSnapshot, setDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { db } from '../firebase';
+import { useAuth } from './AuthContext';
 
 const AppContext = createContext();
 
@@ -11,48 +14,90 @@ const KARMA_TIERS = [
 ];
 
 export function AppProvider({ children }) {
-  const [booksSold, setBooksSold] = useState(() => {
-    try { return parseInt(localStorage.getItem('pb_sold') || '0', 10); }
-    catch { return 0; }
-  });
-  const [wishlist, setWishlist] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('pb_wishlist')) || []; }
-    catch { return []; }
-  });
-  const [bookRequests, setBookRequests] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('pb_requests')) || []; }
-    catch { return []; }
-  });
-  const [whatsappNumber, setWhatsappNumber] = useState(() => {
-    return localStorage.getItem('pb_wa_number') || '919999999999';
-  });
+  const { currentUser } = useAuth();
+  
+  const [booksSold, setBooksSold] = useState(0);
   const [totalBooksSite, setTotalBooksSite] = useState(5248);
+  const [whatsappNumber, setWhatsappNumber] = useState('919999999999');
+  
+  const [wishlist, setWishlist] = useState([]);
+  const [bookRequests, setBookRequests] = useState([]);
 
-  useEffect(() => { localStorage.setItem('pb_sold', booksSold); }, [booksSold]);
-  useEffect(() => { localStorage.setItem('pb_wishlist', JSON.stringify(wishlist)); }, [wishlist]);
-  useEffect(() => { localStorage.setItem('pb_requests', JSON.stringify(bookRequests)); }, [bookRequests]);
-  useEffect(() => { localStorage.setItem('pb_wa_number', whatsappNumber); }, [whatsappNumber]);
+  useEffect(() => {
+    // Global stats and settings
+    const unsubStats = onSnapshot(doc(db, 'app', 'stats'), snap => {
+      if (snap.exists()) {
+        const data = snap.data();
+        if (data.booksSold !== undefined) setBooksSold(data.booksSold);
+        if (data.totalBooksSite !== undefined) setTotalBooksSite(data.totalBooksSite);
+      }
+    });
+    
+    const unsubAdminSet = onSnapshot(doc(db, 'admin', 'settings'), snap => {
+      if (snap.exists() && snap.data().whatsappNumber) {
+        setWhatsappNumber(snap.data().whatsappNumber);
+      }
+    });
 
-  const addBookSold = (count = 1) => {
-    setBooksSold(prev => prev + count);
-    setTotalBooksSite(prev => prev + count);
+    const unsubReqs = onSnapshot(collection(db, 'bookRequests'), snap => {
+      setBookRequests(snap.docs.map(d => ({ ...d.data(), id: d.id })));
+    });
+
+    return () => { unsubStats(); unsubAdminSet(); unsubReqs(); };
+  }, []);
+
+  useEffect(() => {
+    if (currentUser) {
+      const unsub = onSnapshot(doc(db, 'users', currentUser.id), snap => {
+        if (snap.exists() && snap.data().wishlist) {
+          setWishlist(snap.data().wishlist);
+        } else {
+          setWishlist([]);
+        }
+      });
+      return unsub;
+    } else {
+      setWishlist([]);
+    }
+  }, [currentUser]);
+
+  const updateWhatsappNumber = async (num) => {
+    setWhatsappNumber(num);
+    await setDoc(doc(db, 'admin', 'settings'), { whatsappNumber: num }, { merge: true });
+  };
+
+  const addBookSold = async (count = 1) => {
+    await setDoc(doc(db, 'app', 'stats'), {
+      booksSold: booksSold + count,
+      totalBooksSite: totalBooksSite + count
+    }, { merge: true });
   };
 
   const getKarmaTier = (sold = booksSold) => {
     return KARMA_TIERS.find(t => sold >= t.min && sold <= t.max) || KARMA_TIERS[0];
   };
 
-  const addToWishlist = (book) => {
-    setWishlist(prev => prev.find(b => b.id === book.id) ? prev : [...prev, book]);
+  const addToWishlist = async (book) => {
+    if (!currentUser) return; // Silent return if guest
+    await setDoc(doc(db, 'users', currentUser.id), {
+      wishlist: arrayUnion(book)
+    }, { merge: true });
   };
 
-  const removeFromWishlist = (id) => {
-    setWishlist(prev => prev.filter(b => b.id !== id));
+  const removeFromWishlist = async (id) => {
+    if (!currentUser) return;
+    const bookToRemove = wishlist.find(b => b.id === id);
+    if (bookToRemove) {
+      await setDoc(doc(db, 'users', currentUser.id), {
+        wishlist: arrayRemove(bookToRemove)
+      }, { merge: true });
+    }
   };
 
-  const addBookRequest = (req) => {
-    const newReq = { ...req, id: Date.now(), date: new Date().toISOString() };
-    setBookRequests(prev => [newReq, ...prev]);
+  const addBookRequest = async (req) => {
+    const newReqId = String(Date.now());
+    const newReq = { ...req, id: newReqId, date: new Date().toISOString() };
+    await setDoc(doc(db, 'bookRequests', newReqId), newReq);
     return newReq;
   };
 
@@ -67,7 +112,7 @@ export function AppProvider({ children }) {
       booksSold, addBookSold, getKarmaTier, KARMA_TIERS,
       wishlist, addToWishlist, removeFromWishlist,
       bookRequests, addBookRequest,
-      whatsappNumber, setWhatsappNumber,
+      whatsappNumber, setWhatsappNumber: updateWhatsappNumber,
       totalBooksSite, envImpact
     }}>
       {children}

@@ -109,7 +109,7 @@ export default function Sell() {
     ? Math.round(selectedBook.mrp * CONDITION_PAYOUTS[condition])
     : 0;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const sellReqInfo = {
        title: selectedBook.title,
@@ -120,9 +120,9 @@ export default function Sell() {
        image: selectedBook.image,
        user: form
     };
-    const id = addSellRequest(sellReqInfo);
+    const id = await addSellRequest(sellReqInfo);
     setOrderId(id);
-    addBookSold(1);
+    await addBookSold(1);
     setStep(4);
   };
 

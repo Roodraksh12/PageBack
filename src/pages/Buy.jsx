@@ -19,9 +19,9 @@ const SORTS = [
 function BookRequestForm({ onSubmit }) {
   const [form, setForm] = useState({ title: '', author: '', budget: '', condition: 'Any' });
   const [done, setDone] = useState(false);
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(form);
+    await onSubmit(form);
     setDone(true);
   };
   if (done) return (

@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { collection, doc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
 const CartContext = createContext();
 
@@ -7,17 +9,22 @@ export function CartProvider({ children }) {
     try { return JSON.parse(localStorage.getItem('pb_cart')) || []; }
     catch { return []; }
   });
-  const [orders, setOrders] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('pb_orders')) || []; }
-    catch { return []; }
-  });
+  const [orders, setOrders] = useState([]);
+  const [activePromos, setActivePromos] = useState([]);
+  const [deliverySettings, setDeliverySettings] = useState({ standardFee: 49, expressFee: 99, freeAbove: 499 });
   const [cartOpen, setCartOpen] = useState(false);
-  
-  // Promo code state
-  const [promoCode, setPromoCode] = useState(null); // { code, discount, type }
+  const [promoCode, setPromoCode] = useState(null);
 
   useEffect(() => { localStorage.setItem('pb_cart', JSON.stringify(cartItems)); }, [cartItems]);
-  useEffect(() => { localStorage.setItem('pb_orders', JSON.stringify(orders)); }, [orders]);
+
+  useEffect(() => {
+    const unsubOrders = onSnapshot(collection(db, 'orders'), snap => setOrders(snap.docs.map(d => ({ ...d.data(), id: d.id })).sort((a,b) => new Date(b.date) - new Date(a.date))));
+    const unsubPromos = onSnapshot(collection(db, 'promos'), snap => setActivePromos(snap.docs.map(d => ({ ...d.data(), id: d.id }))));
+    const unsubSettings = onSnapshot(doc(db, 'admin', 'settings'), docSnap => {
+      if (docSnap.exists() && docSnap.data().delivery) setDeliverySettings(docSnap.data().delivery);
+    });
+    return () => { unsubOrders(); unsubPromos(); unsubSettings(); };
+  }, []);
 
   const addToCart = (book) => {
     setCartItems(prev => {
@@ -37,13 +44,7 @@ export function CartProvider({ children }) {
   const cartTotal = cartItems.reduce((sum, i) => sum + i.price * i.qty, 0);
   const cartCount = cartItems.length;
 
-  // Delivery config (syncs with admin, defaulting to something sensible)
-  const deliverySettings = (() => {
-    try { return JSON.parse(localStorage.getItem('pb_delivery_settings')) || { standardFee: 49, expressFee: 99, freeAbove: 499 }; }
-    catch { return { standardFee: 49, expressFee: 99, freeAbove: 499 }; }
-  })();
-
-  const deliveryFee = cartTotal >= deliverySettings.freeAbove ? 0 : deliverySettings.standardFee;
+  const deliveryFee = cartTotal >= deliverySettings.freeAbove ? 0 : Number(deliverySettings.standardFee);
 
   // Calculate discount
   let promoDiscount = 0;
@@ -61,11 +62,6 @@ export function CartProvider({ children }) {
   const cartFinalTotal = cartTotal - promoDiscount + deliveryFee;
 
   const applyPromo = (codeStr) => {
-    const activePromos = (() => {
-      try { return JSON.parse(localStorage.getItem('pb_promo_codes')) || []; }
-      catch { return []; }
-    })();
-    
     const p = activePromos.find(x => x.code.toUpperCase() === codeStr.toUpperCase() && x.active);
     if (!p) throw new Error('Invalid or expired promo code');
     if (cartTotal < p.minOrder) throw new Error(`Minimum order of ₹${p.minOrder} required`);
@@ -76,26 +72,23 @@ export function CartProvider({ children }) {
 
   const removePromo = () => setPromoCode(null);
 
-  const cancelOrder = (orderId) => {
-    setOrders(prev => prev.map(order => {
-      if (order.id === orderId && ['placed', 'qc'].includes(order.status)) {
-        return {
-          ...order,
-          status: 'cancelled',
-          statusHistory: [
-            ...order.statusHistory,
-            { status: 'cancelled', label: 'Order Cancelled', time: new Date().toISOString() }
-          ]
-        };
-      }
-      return order;
-    }));
+  const cancelOrder = async (orderId) => {
+    const order = orders.find(o => o.id === orderId);
+    if (order && ['placed', 'qc'].includes(order.status)) {
+      await updateDoc(doc(db, 'orders', String(orderId)), {
+        status: 'cancelled',
+        statusHistory: [
+          ...(order.statusHistory || []),
+          { status: 'cancelled', label: 'Order Cancelled', time: new Date().toISOString() }
+        ]
+      });
+    }
   };
 
-  const placeOrder = (deliveryAddress, paymentMethod) => {
+  const placeOrder = async (deliveryAddress, paymentMethod) => {
     if (cartItems.length === 0) return null;
+    const orderId = `PB${Date.now()}`;
     const order = {
-      id: `PB${Date.now()}`,
       items: cartItems,
       subtotal: cartTotal,
       discount: promoDiscount,
@@ -110,10 +103,10 @@ export function CartProvider({ children }) {
         { status: 'placed', label: 'Order Placed', time: new Date().toISOString() }
       ]
     };
-    setOrders(prev => [order, ...prev]);
+    await setDoc(doc(db, 'orders', orderId), order);
     clearCart();
     setCartOpen(false);
-    return order.id;
+    return orderId;
   };
 
   return (

@@ -56,13 +56,13 @@ export default function Checkout() {
     );
   }
 
-  const handlePlaceOrder = (e) => {
+  const handlePlaceOrder = async (e) => {
     e.preventDefault();
     if (!paymentMethod) {
       alert("Please select a payment method.");
       return;
     }
-    const orderId = placeOrder(form, paymentMethod);
+    const orderId = await placeOrder(form, paymentMethod);
     if (orderId) navigate('/orders');
   };
 

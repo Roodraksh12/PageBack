@@ -81,8 +81,8 @@ function MainLayout() {
 export default function App() {
   return (
     <ThemeProvider>
-      <AppProvider>
-        <AuthProvider>
+      <AuthProvider>
+        <AppProvider>
           <AdminProvider>
             <CartProvider>
               <BrowserRouter>
@@ -100,8 +100,8 @@ export default function App() {
               </BrowserRouter>
             </CartProvider>
           </AdminProvider>
-        </AuthProvider>
-      </AppProvider>
+        </AppProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

@@ -381,7 +381,10 @@ function InventoryTab() {
     const f = e.target.files[0];
     if (f) {
       const r = new FileReader();
-      r.onload = ev => alert(`Imported ${importCSV(ev.target.result)} books!`);
+      r.onload = async (ev) => {
+        const count = await importCSV(ev.target.result);
+        alert(`Imported ${count} books!`);
+      };
       r.readAsText(f);
     }
   };
