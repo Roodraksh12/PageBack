@@ -3,7 +3,6 @@ import { useSearchParams } from 'react-router-dom';
 import { Search, Filter, X, SlidersHorizontal, BookOpen } from 'lucide-react';
 import { genres } from '../data/books';
 import BookCard from '../components/BookCard';
-import BookModal from '../components/BookModal';
 import { useApp } from '../context/AppContext';
 import { useAdmin } from '../context/AdminContext';
 
@@ -84,7 +83,6 @@ export default function Buy() {
   const [priceRange, setPriceRange] = useState([0, 1000]);
   const [sort, setSort]         = useState('popular');
   const [filterOpen, setFilterOpen] = useState(false);
-  const [selected, setSelected] = useState(null);
 
   useEffect(() => { if (genreParam) setSelectedGenres([genreParam]); }, [genreParam]);
 
@@ -227,7 +225,7 @@ export default function Buy() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {filtered.map(b => <BookCard key={b.id} book={b} onView={setSelected} />)}
+                  {filtered.map(b => <BookCard key={b.id} book={b} />)}
                 </div>
               )}
             </div>
@@ -235,7 +233,6 @@ export default function Buy() {
         </div>
       )}
 
-      {selected && <BookModal book={selected} onClose={() => setSelected(null)} />}
     </div>
   );
 }

@@ -17,6 +17,7 @@ import Checkout from './pages/Checkout';
 import Orders from './pages/Orders';
 import About from './pages/About';
 import AdminPortal from './pages/AdminPortal';
+import BookDetail from './pages/BookDetail';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -58,6 +59,7 @@ function MainLayout() {
         <Routes>
           <Route path="/"       element={<Home />}   />
           <Route path="/buy"    element={<Buy />}    />
+          <Route path="/book/:id" element={<BookDetail />} />
           <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
           <Route path="/sell"   element={<ProtectedRoute><Sell /></ProtectedRoute>}   />
           <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />

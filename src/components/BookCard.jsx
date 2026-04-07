@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, Eye } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
@@ -11,6 +12,7 @@ const conditionStyles = {
 
 export default function BookCard({ book, onView }) {
   const { addToCart, cartItems } = useCart();
+  const navigate = useNavigate();
   const barRef = useRef(null);
   const inCart = cartItems.some(i => i.id === book.id);
   const savings = book.mrp - book.price;
@@ -53,7 +55,7 @@ export default function BookCard({ book, onView }) {
 
         <div className="absolute inset-0 bg-black/60 transition-all duration-300 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 backdrop-blur-sm">
           <button
-            onClick={() => onView?.(book)}
+            onClick={() => navigate(`/book/${book.id}`)}
             className="bg-white text-black px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-neutral-200 transition-colors"
           >
             <Eye size={14} className="inline mr-1" /> View
