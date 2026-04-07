@@ -1,120 +1,53 @@
-# 📚 PageBack — Give Your Books a Second Life
+# 📚 PageBack - The Competitive Exam Bookstore
 
-> India's trusted used bookstore platform. Buy quality pre-loved books at unbeatable prices. Sell your old books for instant cash.
+PageBack is a modern, responsive, and highly-targeted e-commerce platform built specifically for students preparing for competitive exams in India. We aim to make expensive preparation materials (JEE, NEET, UPSC, SSC, Banking) accessible by building a robust secondary market where students can buy gently-used materials cheaply and sell them instantly once they clear their exams!
 
-**Live Demo:** [pageback.vercel.app](https://pageback.vercel.app) *(deploy to update)*
+## 🚀 Key Features
 
----
+### 🛒 Buyer Experience
+- **Dedicated Browse & Filter:** Explore textbooks categorized strictly by major competitive exams (SSC & Railway, Banking, JEE, NEET, UPSC, CLAT).
+- **Secure Cart & Checkout:** A complete multi-step checkout workflow with Cart management, Promo code discounting, address collection, and payment selection (UPI / COD).
+- **Order Tracking Dashboard:** Clients can review the order history alongside detailed receipt information, delivery states, and payment methods.
 
-## ✨ Features
+### 💰 Seller Experience
+- **Instant Quotes:** Sellers can input their cleared exam prep materials and get a mock price estimator on the spot.
+- **Eco-Friendly Impact Metrics:** We show the seller exactly how many trees they potentially saved and how much carbon footprint was avoided.
+- **Smart Pickup Workflow:** Seamless intake form to schedule pickups and arrange NEFT/UPI payouts.
 
-| Feature | Description |
-|---|---|
-| 🛒 Buy Page | Browse 20+ books with search, genre/condition/price filters |
-| 💰 Instant Price Estimator | 5-step sell flow with real-time payout calculation |
-| 📊 Live Demand Meter | Genre-aware demand badge on sell page |
-| 🌱 Book Karma Score | Tier system (Seedling → Legend) for sellers |
-| 🌍 Environmental Impact | Live counter of paper/trees saved |
-| 📋 Condition Report | Detailed per-book condition transparency |
-| 🎯 Book Request | Buyers can request specific books |
-| 💬 WhatsApp Quick Sell | One-tap WhatsApp quote button |
-| 🌙 Dark Mode | Full dark mode with localStorage persistence |
-| 📱 Mobile-First | Bottom nav bar, responsive grid, touch-friendly |
-| 🔐 Admin Portal | PIN-protected, WhatsApp number management |
+### 🛡️ Admin Portal (Control Center)
+The platform includes an encapsulated, fully-mocked dashboard for administrative managers. Access it natively within the application.
+- **Order Dispatch:** Track and update the lifecycle of user purchases.
+- **Inventory Engine:** Review, edit (price, cover, tags), and delete books from live listings. Includes an automated bulk CSV ingestion system.
+- **Sell Requests Intake:** Approve or reject user "Sell" requests. Approvals automatically push the textbook right onto the live platform store!
+- **Discounts & Settings:** Modifying active Promo Codes and defining the delivery thresholds on the fly. 
+- *Default Admin Credentials: `admin` / `pageback123`*
 
----
+## 🛠️ Stack & Technologies Used
 
-## 🚀 Getting Started
+- **Framework:** React + Vite
+- **Styling:** Tailwind CSS (featuring a bespoke non-monochromatic, dynamic "Forest / Cream / Amber" theme color system).
+- **Icons:** Lucide-React
+- **State Management:** React Context API (CartContext, AdminContext, AuthContext, AppContext).
+- **Routing:** React-Router-DOM
 
-```bash
-# Install dependencies
-npm install
+## 🔧 Getting Started
+To get this project running locally on your machine:
 
-# Start development server
-npm run dev
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Roodraksh12/PageBack.git
+   cd PageBack
+   ```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+3. **Run the local development server:**
+   ```bash
+   npm run dev
+   ```
+4. **View your application:**
+   Open your browser and navigate to `http://localhost:5173/`
 
-# Build for production
-npm run build
-```
-
----
-
-## 🌐 Deploy to Vercel
-
-### Option 1: Vercel CLI (Recommended)
-```bash
-npm install -g vercel
-vercel login
-vercel --prod
-```
-
-### Option 2: GitHub + Vercel Dashboard
-1. Push this repo to GitHub: `https://github.com/Roodraksh12/PagePay`
-2. Go to [vercel.com](https://vercel.com) → New Project
-3. Import your GitHub repo
-4. Framework: **Vite** (auto-detected)
-5. Click Deploy ✅
-
-The `vercel.json` file already handles SPA routing so all React Router pages work in production.
-
----
-
-## 📤 Push to GitHub
-
-```bash
-git init
-git add .
-git commit -m "feat: initial PageBack website"
-git branch -M main
-git remote add origin https://github.com/Roodraksh12/PagePay.git
-git push -u origin main
-```
-
----
-
-## 🗂️ Project Structure
-
-```
-src/
-├── context/       # Cart, Theme, App (karma, WhatsApp) state
-├── data/          # 20 dummy books + genres + testimonials
-├── components/    # Reusable: BookCard, BookModal, CartSidebar, etc.
-├── pages/         # Home, Buy, Sell, Orders, About, Admin
-└── index.css      # Tailwind + custom design system
-```
-
----
-
-## 🔐 Admin Portal
-
-- URL: `/admin`
-- Demo PIN: `2580`
-- Features: WhatsApp number management, site stats, book request viewer
-
----
-
-## 🛠️ Tech Stack
-
-- **React 18** + **Vite**
-- **Tailwind CSS v3** (custom palette: forest green + cream + amber)
-- **React Router v6**
-- **Lucide React** icons
-- **Google Fonts** — Playfair Display + DM Sans
-- **localStorage** for cart, orders, karma, dark mode
-
----
-
-## 📱 Pages
-
-| Route | Page |
-|---|---|
-| `/` | Home |
-| `/buy` | Browse + Book Request |
-| `/sell` | 5-Step Instant Price Estimator |
-| `/orders` | Order Tracking |
-| `/about` | About PageBack |
-| `/admin` | Admin Portal |
-
----
-
-*Made with ❤️ in India*
+## 💡 Origin
+Originally conceived as a typical second-hand bookstore ("Second Life Books"), this project was strategically pivoted to target a highly-focused demographic: the massive ecosystem of Indian competitive exam aspirants. With zero fluff and maximum usability, PageBack is built for speed and affordability.
