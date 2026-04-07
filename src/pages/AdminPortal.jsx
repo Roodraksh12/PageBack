@@ -3,7 +3,8 @@ import { useAdmin } from '../context/AdminContext';
 import { useApp } from '../context/AppContext';
 import { 
   Lock, Tag, PackageSearch, Inbox, Database, LogOut, 
-  Search, Plus, Upload, Trash2, Check, X, ShieldAlert, Camera 
+  Search, Plus, Upload, Trash2, Check, X, ShieldAlert, Camera,
+  Menu
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -18,6 +19,7 @@ export default function AdminPortal() {
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [activeTab, setActiveTab] = useState('orders');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [countdown, setCountdown] = useState(null);
   const logoutTimerRef  = useRef(null);
   const countdownRef    = useRef(null);
@@ -122,16 +124,43 @@ export default function AdminPortal() {
   ];
 
   return (
-    <div className="min-h-screen flex bg-cream-50 dark:bg-forest-900">
+    <div className="min-h-screen flex bg-cream-50 dark:bg-forest-900 border-x">
+      {/* ── Mobile Header ── */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-forest-800 dark:bg-forest-950 flex items-center justify-between px-4 z-20 border-b border-forest-700">
+        <button onClick={() => setIsSidebarOpen(true)} className="p-2 text-cream-300 hover:bg-forest-700 transition-colors">
+          <Menu size={24} />
+        </button>
+        <div className="flex items-center gap-2">
+          <ShieldAlert size={18} className="text-cream-300" />
+          <h1 className="font-display font-bold text-white uppercase tracking-tight text-lg">Admin</h1>
+        </div>
+        <div className="w-10"></div> {/* Spacer for balance */}
+      </div>
+
+      {/* ── Sidebar Overlay (Mobile) ── */}
+      {isSidebarOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 bg-black/50 z-30 backdrop-blur-sm transition-opacity"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* ── Dark Forest Sidebar ── */}
-      <aside className="w-64 bg-forest-800 dark:bg-forest-950 flex flex-col fixed inset-y-0 z-10">
+      <aside className={`w-64 bg-forest-800 dark:bg-forest-950 flex flex-col fixed inset-y-0 z-40 transition-transform duration-300 lg:translate-x-0 ${
+        isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}>
         {/* Sidebar header */}
-        <div className="p-6 border-b border-forest-700 dark:border-forest-800">
-          <div className="flex items-center gap-3 mb-1">
-            <ShieldAlert size={20} className="text-cream-300 flex-shrink-0" />
-            <h2 className="font-display font-bold text-xl text-white tracking-tight">Admin</h2>
+        <div className="p-6 border-b border-forest-700 dark:border-forest-800 flex justify-between items-center lg:block">
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <ShieldAlert size={20} className="text-cream-300 flex-shrink-0" />
+              <h2 className="font-display font-bold text-xl text-white tracking-tight">Admin</h2>
+            </div>
+            <p className="text-cream-500 text-[10px] font-bold uppercase tracking-widest pl-8">Control Center</p>
           </div>
-          <p className="text-cream-500 text-[10px] font-bold uppercase tracking-widest pl-8">Control Center</p>
+          <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden p-2 text-cream-400 hover:text-white transition-colors">
+            <X size={20} />
+          </button>
         </div>
 
         {/* Nav */}
@@ -139,7 +168,7 @@ export default function AdminPortal() {
           {tabs.map(t => {
             const Icon = t.icon;
             return (
-              <button key={t.id} onClick={() => setActiveTab(t.id)}
+              <button key={t.id} onClick={() => { setActiveTab(t.id); setIsSidebarOpen(false); }}
                 className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors text-left ${
                   activeTab === t.id
                     ? 'bg-forest-700 text-white'
@@ -162,10 +191,10 @@ export default function AdminPortal() {
       </aside>
 
       {/* ── Main Content ── */}
-      <main className="flex-1 ml-64 overflow-y-auto">
+      <main className="flex-1 lg:ml-64 overflow-y-auto pt-16 lg:pt-0">
         {/* Inactivity Warning Toast */}
         {countdown !== null && (
-          <div className="fixed top-4 right-4 z-50 flex items-center gap-4 bg-white dark:bg-forest-800 border border-red-200 dark:border-red-800 text-forest-800 dark:text-cream-100 px-5 py-4 shadow-warm-lg" role="alert">
+          <div className="fixed top-20 right-4 left-4 lg:top-4 lg:left-auto lg:right-4 z-50 flex items-center gap-4 bg-white dark:bg-forest-800 border border-red-200 dark:border-red-800 text-forest-800 dark:text-cream-100 px-5 py-4 shadow-warm-lg" role="alert">
             <div className="relative w-12 h-12 flex-shrink-0">
               <svg className="w-12 h-12 -rotate-90" viewBox="0 0 44 44">
                 <circle cx="22" cy="22" r="18" fill="none" stroke="#e5e7eb" strokeWidth="2" />
@@ -188,7 +217,7 @@ export default function AdminPortal() {
           </div>
         )}
 
-        <div className="max-w-5xl mx-auto p-8">
+        <div className="max-w-5xl mx-auto p-4 lg:p-8">
           {activeTab === 'orders'    && <OrdersTab />}
           {activeTab === 'sellReqs' && <SellRequestsTab />}
           {activeTab === 'inventory' && <InventoryTab />}
@@ -249,9 +278,9 @@ function OrdersTab() {
                 </div>
               ))}
             </div>
-            <div className="border-t border-cream-200 dark:border-forest-700 pt-3 flex flex-col md:flex-row justify-between text-xs gap-2">
+            <div className="border-t border-cream-200 dark:border-forest-700 pt-3 flex flex-wrap justify-between text-xs gap-3">
               <span className="text-forest-500 dark:text-cream-500">Subtotal: ₹{o.subtotal} | Delivery: ₹{o.deliveryFee} | Discount: -₹{o.discount || 0}</span>
-              <span className="font-bold text-forest-700 dark:text-cream-100">Total: ₹{o.total}</span>
+              <span className="font-bold text-forest-700 dark:text-cream-100 whitespace-nowrap">Total: ₹{o.total}</span>
             </div>
             {o.deliveryAddress && (
               <div className="border-t border-cream-200 dark:border-forest-700 mt-4 pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-cream-100 dark:bg-forest-700/30 p-4">
@@ -299,11 +328,11 @@ function SellRequestsTab() {
                 <img src={r.image} alt="Book" className="h-32 object-contain border border-cream-200 dark:border-forest-600" />
               </div>
             )}
-            <div className="flex gap-2 mt-4">
-              <button onClick={() => updateSellRequest(r.id, 'accepted')} className="px-4 py-2 border border-forest-200 bg-forest-50 dark:bg-forest-700/30 text-forest-700 dark:text-cream-300 hover:bg-forest-100 transition-colors text-xs font-bold uppercase tracking-widest flex items-center gap-2">
-                <Check size={13} /> Accept & Add
+            <div className="flex flex-wrap gap-2 mt-4">
+              <button onClick={() => updateSellRequest(r.id, 'accepted')} className="flex-1 sm:flex-none px-4 py-2 border border-forest-200 bg-forest-50 dark:bg-forest-700/30 text-forest-700 dark:text-cream-300 hover:bg-forest-100 transition-colors text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2">
+                <Check size={13} /> Accept
               </button>
-              <button onClick={() => updateSellRequest(r.id, 'rejected')} className="px-4 py-2 border border-red-200 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 transition-colors text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+              <button onClick={() => updateSellRequest(r.id, 'rejected')} className="flex-1 sm:flex-none px-4 py-2 border border-red-200 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 transition-colors text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2">
                 <X size={13} /> Reject
               </button>
             </div>
@@ -359,16 +388,16 @@ function InventoryTab() {
 
   return (
     <div className="animate-fade-in">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="font-display font-bold text-2xl text-forest-800 dark:text-cream-100">Live Inventory ({inventory.length})</h2>
-        <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+        <h2 className="font-display font-bold text-2xl text-forest-800 dark:text-cream-100">Inventory ({inventory.length})</h2>
+        <div className="flex gap-2 w-full sm:w-auto">
           <input type="file" accept=".csv" ref={fileInput} className="hidden" onChange={handleCSV} />
-          <button onClick={() => fileInput.current.click()} className="border border-cream-300 dark:border-forest-600 bg-white dark:bg-forest-800 px-3 py-2 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-forest-600 dark:text-cream-300 hover:bg-cream-50 dark:hover:bg-forest-700 transition-colors">
-            <Upload size={13} /> CSV Import
+          <button onClick={() => fileInput.current.click()} className="flex-1 sm:flex-none border border-cream-300 dark:border-forest-600 bg-white dark:bg-forest-800 px-3 py-2 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest text-forest-600 dark:text-cream-300 hover:bg-cream-50 dark:hover:bg-forest-700 transition-colors">
+            <Upload size={13} /> Import
           </button>
           <button onClick={() => { setEditForm({ title: '', author: '', mrp: 0, price: 0, condition: 'Good', genre: 'Fiction' }); setEditingId('new'); }}
-            className={btnPrimary}>
-            <Plus size={13} /> Add Book
+            className={`${btnPrimary} flex-1 sm:flex-none justify-center px-4`}>
+            <Plus size={13} /> Add
           </button>
         </div>
       </div>
