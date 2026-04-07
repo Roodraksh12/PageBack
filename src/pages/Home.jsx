@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, ChevronLeft, ChevronRight, Star, Leaf, TrendingUp, Shield, Zap } from 'lucide-react';
-import { books, genres, testimonials, whyPageBack } from '../data/books';
+import { ArrowRight, Star } from 'lucide-react';
+import { genres, testimonials, whyPageBack } from '../data/books';
 import { useApp } from '../context/AppContext';
-import BookCard from '../components/BookCard';
 
 function useCountUp(target, duration = 2000, start = false) {
   const [count, setCount] = useState(0);
@@ -51,55 +50,6 @@ function StatsBar() {
   );
 }
 
-function FeaturedCarousel() {
-  const [idx, setIdx] = useState(0);
-  const featured = books.filter(b => b.condition === 'Like New' || b.tags?.includes('bestseller'));
-  const visible = 3;
-  const max = featured.length - visible;
-  const prev = () => setIdx(i => Math.max(0, i - 1));
-  const next = () => setIdx(i => Math.min(max, i + 1));
-
-  return (
-    <section className="py-16 px-4 md:px-8 max-w-7xl mx-auto">
-      <div className="flex items-end justify-between mb-8">
-        <div>
-          <p className="text-amber-500 font-semibold text-sm tracking-wide uppercase mb-1">Hand-Picked</p>
-          <h2 className="font-display font-bold text-3xl md:text-4xl text-forest-800 dark:text-cream-100">Featured Books</h2>
-        </div>
-        <div className="flex gap-2">
-          <button onClick={prev} disabled={idx === 0} className="w-10 h-10 rounded-xl border-2 border-forest-200 dark:border-forest-700 flex items-center justify-center hover:bg-cream-200 dark:hover:bg-forest-800 disabled:opacity-40 transition-all">
-            <ChevronLeft size={18} />
-          </button>
-          <button onClick={next} disabled={idx >= max} className="w-10 h-10 rounded-xl border-2 border-forest-200 dark:border-forest-700 flex items-center justify-center hover:bg-cream-200 dark:hover:bg-forest-800 disabled:opacity-40 transition-all">
-            <ChevronRight size={18} />
-          </button>
-        </div>
-      </div>
-
-      <div className="overflow-hidden">
-        <div
-          className="flex gap-6 transition-transform duration-500"
-          style={{ transform: `translateX(-${idx * (100 / visible)}%)` }}
-        >
-          {featured.map(b => (
-            <div key={b.id} className="w-full flex-shrink-0" style={{ width: `calc(${100 / visible}% - 16px)` }}>
-              <BookCard book={b} />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Mobile scroll */}
-      <div className="md:hidden overflow-x-auto flex gap-4 pb-2 snap-x snap-mandatory mt-0">
-        {featured.map(b => (
-          <div key={b.id} className="snap-start flex-shrink-0 w-64">
-            <BookCard book={b} />
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
 
 export default function Home() {
   const { envImpact, totalBooksSite } = useApp();
@@ -196,27 +146,19 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FEATURED BOOKS CAROUSEL */}
-      <div className="bg-cream-50 dark:bg-forest-900/50">
-        <FeaturedCarousel />
-      </div>
-
       {/* GENRE GRID */}
       <section className="section-pad border-b border-black">
         <div className="mb-10">
           <h2 className="font-bold text-5xl md:text-7xl uppercase tracking-tighter">Genres</h2>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {genres.map((g, i) => (
+          {genres.map((g) => (
             <Link
               key={g.id}
               to={`/buy?genre=${g.id}`}
               className="group border border-black dark:border-white p-6 text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
             >
               <p className="font-bold text-lg uppercase tracking-widest">{g.label}</p>
-              <p className="opacity-70 text-xs mt-2 font-mono">
-                [{books.filter(b => b.genre === g.id).length}]
-              </p>
             </Link>
           ))}
         </div>
