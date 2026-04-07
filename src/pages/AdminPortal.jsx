@@ -203,10 +203,10 @@ export default function AdminPortal() {
 // ────────────────────────────────────────────────────────
 // Shared input / card styles matching the normal site
 // ────────────────────────────────────────────────────────
-const inputCls = "w-full border border-cream-300 dark:border-forest-600 px-4 py-3 bg-white dark:bg-forest-700 text-forest-800 dark:text-cream-100 focus:outline-none focus:ring-2 focus:ring-forest-500 text-sm";
-const cardCls  = "bg-white dark:bg-forest-800 border border-cream-200 dark:border-forest-700 shadow-sm";
+const inputCls   = "w-full border border-cream-300 dark:border-forest-600 px-4 py-3 bg-cream-50 dark:bg-forest-700 text-forest-700 dark:text-cream-100 focus:outline-none focus:ring-2 focus:ring-forest-500 text-sm";
+const cardCls    = "bg-cream-50 dark:bg-forest-800 border border-cream-200 dark:border-forest-700 shadow-sm";
 const btnPrimary = "bg-forest-800 hover:bg-forest-900 text-white font-bold text-xs uppercase tracking-widest transition-colors py-3 px-6 flex items-center gap-2";
-const lblCls   = "block text-[10px] font-bold uppercase tracking-widest text-forest-500 dark:text-cream-400 mb-2";
+const lblCls     = "block text-[10px] font-bold uppercase tracking-widest text-forest-600 dark:text-cream-400 mb-2";
 
 // ────────────────────────────────────────────────────────
 function OrdersTab() {
@@ -216,6 +216,7 @@ function OrdersTab() {
   return (
     <div className="animate-fade-in">
       <h2 className="font-display font-bold text-2xl text-forest-800 dark:text-cream-100 mb-6">Order Management</h2>
+
       <div className="space-y-4">
         {orders.length === 0 ? (
           <p className="text-sm text-forest-400 dark:text-cream-500">No orders received yet.</p>
@@ -223,8 +224,8 @@ function OrdersTab() {
           <div key={o.id} className={`${cardCls} p-5`}>
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h3 className="font-bold text-forest-800 dark:text-cream-100 text-sm">{o.id}</h3>
-                <p className="text-xs text-forest-400 dark:text-cream-500 mt-0.5">{new Date(o.date).toLocaleString()}</p>
+                <h3 className="font-bold text-forest-700 dark:text-cream-100 text-sm">{o.id}</h3>
+                <p className="text-xs text-forest-500 dark:text-cream-500 mt-0.5">{new Date(o.date).toLocaleString()}</p>
               </div>
               <select value={o.status} onChange={e => updateOrderStatus(o.id, e.target.value)}
                 className="border border-cream-300 dark:border-forest-600 bg-white dark:bg-forest-700 text-forest-700 dark:text-cream-200 px-3 py-1.5 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-forest-500 appearance-none">
@@ -235,26 +236,26 @@ function OrdersTab() {
               {o.items.map(i => (
                 <div key={i.id} className="flex justify-between text-sm">
                   <span className="text-forest-700 dark:text-cream-200">{i.qty}x {i.title}</span>
-                  <span className="font-medium text-forest-800 dark:text-cream-100">₹{i.price * i.qty}</span>
+                  <span className="font-semibold text-forest-700 dark:text-cream-100">₹{i.price * i.qty}</span>
                 </div>
               ))}
             </div>
-            <div className="border-t border-cream-100 dark:border-forest-700 pt-3 flex flex-col md:flex-row justify-between text-xs gap-2">
-              <span className="text-forest-400 dark:text-cream-500">Subtotal: ₹{o.subtotal} | Delivery: ₹{o.deliveryFee} | Discount: -₹{o.discount || 0}</span>
-              <span className="font-bold text-forest-800 dark:text-cream-100">Total: ₹{o.total}</span>
+            <div className="border-t border-cream-200 dark:border-forest-700 pt-3 flex flex-col md:flex-row justify-between text-xs gap-2">
+              <span className="text-forest-500 dark:text-cream-500">Subtotal: ₹{o.subtotal} | Delivery: ₹{o.deliveryFee} | Discount: -₹{o.discount || 0}</span>
+              <span className="font-bold text-forest-700 dark:text-cream-100">Total: ₹{o.total}</span>
             </div>
             {o.deliveryAddress && (
-              <div className="border-t border-cream-100 dark:border-forest-700 mt-4 pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-cream-50 dark:bg-forest-700/30 p-4">
+              <div className="border-t border-cream-200 dark:border-forest-700 mt-4 pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-cream-100 dark:bg-forest-700/30 p-4">
                 <div>
                   <span className={lblCls}>Deliver To</span>
-                  <span className="font-bold text-forest-800 dark:text-cream-100 block">{o.deliveryAddress.fullName}</span>
-                  <span className="text-forest-500 dark:text-cream-400 block mt-1">{o.deliveryAddress.address}</span>
+                  <span className="font-semibold text-forest-700 dark:text-cream-100 block">{o.deliveryAddress.fullName}</span>
+                  <span className="text-forest-600 dark:text-cream-400 block mt-1">{o.deliveryAddress.address}</span>
                   <span className="text-forest-600 dark:text-cream-300 block">{o.deliveryAddress.city}, {o.deliveryAddress.state} - {o.deliveryAddress.pinCode}</span>
-                  <span className="text-forest-400 dark:text-cream-500 block mt-1">Ph: {o.deliveryAddress.phone}</span>
+                  <span className="text-forest-500 dark:text-cream-500 block mt-1">Ph: {o.deliveryAddress.phone}</span>
                 </div>
                 <div>
                   <span className={lblCls}>Payment Method</span>
-                  <span className="font-bold text-forest-800 dark:text-cream-100">{o.paymentMethod === 'Online' ? 'Prepaid (Online)' : 'Cash on Delivery'}</span>
+                  <span className="font-semibold text-forest-700 dark:text-cream-100">{o.paymentMethod === 'Online' ? 'Prepaid (Online)' : 'Cash on Delivery'}</span>
                 </div>
               </div>
             )}
@@ -278,8 +279,8 @@ function SellRequestsTab() {
           <div key={r.id} className={`${cardCls} p-5`}>
             <div className="flex justify-between items-start mb-3">
               <div>
-                <h3 className="font-bold text-forest-800 dark:text-cream-100 text-lg">{r.title}</h3>
-                <p className="text-xs text-forest-400 dark:text-cream-500 mt-1">By {r.author} | Condition: {r.condition} | MRP: ₹{r.mrp}</p>
+                <h3 className="font-bold text-forest-700 dark:text-cream-100 text-lg">{r.title}</h3>
+                <p className="text-xs text-forest-500 dark:text-cream-500 mt-1">By {r.author} | Condition: {r.condition} | MRP: ₹{r.mrp}</p>
               </div>
               <span className="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs px-3 py-1 font-medium capitalize">{r.status}</span>
             </div>
@@ -306,8 +307,8 @@ function SellRequestsTab() {
         {sellRequests.filter(r => r.status === 'accepted' || r.status === 'rejected').map(r => (
           <div key={r.id} className={`${cardCls} p-4 flex justify-between items-center`}>
             <div>
-              <p className="font-semibold text-sm text-forest-800 dark:text-cream-100">{r.title}</p>
-              <p className="text-xs text-forest-400 dark:text-cream-500 mt-1">
+              <p className="font-semibold text-sm text-forest-700 dark:text-cream-100">{r.title}</p>
+              <p className="text-xs text-forest-500 dark:text-cream-500 mt-1">
                 <span className={r.status === 'accepted' ? 'text-forest-600 dark:text-forest-400 font-medium' : 'text-red-500 font-medium'}>{r.status.toUpperCase()}</span>
                 {' '}· {new Date(r.reviewedAt).toLocaleDateString()}
               </p>
@@ -350,7 +351,7 @@ function InventoryTab() {
   return (
     <div className="animate-fade-in">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="font-display font-bold text-2xl text-forest-800 dark:text-cream-100">Inventory ({inventory.length})</h2>
+        <h2 className="font-display font-bold text-2xl text-forest-800 dark:text-cream-100">Live Inventory ({inventory.length})</h2>
         <div className="flex gap-2">
           <input type="file" accept=".csv" ref={fileInput} className="hidden" onChange={handleCSV} />
           <button onClick={() => fileInput.current.click()} className="border border-cream-300 dark:border-forest-600 bg-white dark:bg-forest-800 px-3 py-2 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-forest-600 dark:text-cream-300 hover:bg-cream-50 dark:hover:bg-forest-700 transition-colors">
@@ -421,12 +422,12 @@ function InventoryTab() {
                   : <div className={`w-12 h-16 flex-shrink-0 flex items-center justify-center text-xs border border-cream-200 dark:border-forest-700 ${b.coverColor || 'bg-cream-100 dark:bg-forest-700'}`}>📖</div>
                 }
                 <div>
-                  <h4 className="font-semibold text-sm text-forest-800 dark:text-cream-100">{b.title}</h4>
-                  <p className="text-xs text-forest-400 dark:text-cream-500 mt-0.5">{b.author} · MRP ₹{b.mrp}</p>
+                  <h4 className="font-semibold text-sm text-forest-700 dark:text-cream-100">{b.title}</h4>
+                  <p className="text-xs text-forest-500 dark:text-cream-500 mt-0.5">{b.author} · MRP ₹{b.mrp}</p>
                 </div>
                 <div className="ml-auto text-right mr-4">
-                  <p className="font-bold text-forest-800 dark:text-cream-100">₹{b.price}</p>
-                  <span className="text-[10px] font-medium text-forest-500 bg-cream-100 dark:bg-forest-700 dark:text-cream-400 px-2 py-0.5 mt-1 inline-block">{b.condition}</span>
+                  <p className="font-bold text-forest-700 dark:text-cream-100">₹{b.price}</p>
+                  <span className="text-[10px] font-medium text-forest-600 bg-cream-100 dark:bg-forest-700 dark:text-cream-400 px-2 py-0.5 mt-1 inline-block">{b.condition}</span>
                 </div>
               </div>
             )}
