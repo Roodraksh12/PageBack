@@ -38,14 +38,13 @@ function StatsBar() {
     <div ref={ref} className="bg-forest-700 dark:bg-forest-800 text-white py-8 px-4">
       <div className="max-w-4xl mx-auto grid grid-cols-3 gap-4 text-center">
         {[
-          { val: `${books_.toLocaleString()}+`, label: 'Books Available', icon: '📚' },
-          { val: `₹${savings}`, label: 'Avg. Savings per Book', icon: '💰' },
-          { val: `${sellers.toLocaleString()}+`, label: 'Happy Sellers', icon: '😊' },
+          { val: `${books_.toLocaleString()}+`, label: 'Books Available' },
+          { val: `₹${savings}`, label: 'Avg. Savings per Book' },
+          { val: `${sellers.toLocaleString()}+`, label: 'Happy Sellers' },
         ].map((s, i) => (
           <div key={i} className="flex flex-col items-center gap-1">
-            <span className="text-2xl md:text-3xl">{s.icon}</span>
-            <span className="font-display font-bold text-2xl md:text-4xl">{s.val}</span>
-            <span className="text-cream-300 text-xs md:text-sm">{s.label}</span>
+            <span className="font-bold text-2xl md:text-5xl">{s.val}</span>
+            <span className="text-neutral-400 text-xs md:text-sm uppercase tracking-widest font-bold">{s.label}</span>
           </div>
         ))}
       </div>
@@ -115,41 +114,32 @@ export default function Home() {
   return (
     <div className="page-enter">
       {/* HERO */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-forest-700 via-forest-600 to-forest-500 dark:from-forest-900 dark:via-forest-800 dark:to-forest-700 text-white min-h-[90vh] flex items-center paper-texture">
-        {/* BG circles */}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-amber-500/10 rounded-full -translate-y-1/2 translate-x-1/4 blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-forest-400/20 rounded-full translate-y-1/2 -translate-x-1/4 blur-3xl" />
-
-        <div className="section-pad relative z-10 grid lg:grid-cols-2 gap-12 items-center w-full">
+      <section className="bg-white dark:bg-black text-black dark:text-white min-h-[85vh] flex items-center border-b border-black dark:border-white">
+        <div className="section-pad grid lg:grid-cols-2 gap-12 items-center w-full">
           <div className="animate-fade-in">
-            <div className="inline-flex items-center gap-2 bg-amber-500/20 border border-amber-400/40 rounded-full px-4 py-2 mb-6">
-              <Leaf size={14} className="text-amber-400" />
-              <span className="text-amber-300 text-sm font-medium">Sustainable Reading • Made in India</span>
-            </div>
-
-            <h1 className="font-display font-bold text-5xl md:text-6xl lg:text-7xl leading-tight mb-6">
-              Give your books<br />
-              <span className="text-amber-400">a second life.</span><br />
-              <span className="text-4xl md:text-5xl font-normal italic">Get paid instantly.</span>
+            <h1 className="font-bold text-6xl md:text-8xl leading-[0.9] tracking-tighter mb-8 uppercase">
+              Exam<br />
+              Prep<br />
+              <span className="text-neutral-500">Books</span>
             </h1>
 
-            <p className="text-cream-200 text-xl leading-relaxed mb-8 max-w-lg">
-              PageBack buys your used books at guaranteed best prices and sells curated reads at unbeatable deals — all quality-checked and verified.
+            <p className="text-forest-800 text-lg md:text-xl font-medium mb-10 max-w-md">
+              PageBack is India's largest marketplace for used competitive exam materials. Buy cheaply to start preparing, sell instantly when you clear.
             </p>
 
-            <div className="flex flex-wrap gap-4">
-              <Link to="/buy" className="btn-amber flex items-center gap-2 text-lg px-8 py-4">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link to="/buy" className="btn-primary flex items-center justify-center gap-2 text-lg px-8 py-5 uppercase tracking-widest">
                 Browse Books <ArrowRight size={18} />
               </Link>
-              <Link to="/sell" className="btn-outline border-cream-300 text-cream-100 hover:bg-cream-100 hover:text-forest-800 text-lg px-8 py-4">
-                Sell Your Books
+              <Link to="/sell" className="btn-outline flex items-center justify-center text-lg px-8 py-5 uppercase tracking-widest">
+                Sell Your Stack
               </Link>
             </div>
 
             {/* Trust badges */}
-            <div className="flex flex-wrap gap-3 mt-8">
-              {['₹ Instant Payout', '✅ Quality Verified', '🌱 Eco-Friendly', '📦 Free Pickup'].map(b => (
-                <span key={b} className="bg-white/10 backdrop-blur-sm border border-white/20 text-sm px-3 py-1.5 rounded-lg text-cream-200">
+            <div className="flex flex-wrap gap-2 mt-12">
+              {['JEE / NEET', 'UPSC / SSC', 'Verified Editions', 'Fast Delivery'].map(b => (
+                <span key={b} className="border border-forest-800 text-xs px-3 py-1 text-forest-800 font-bold uppercase tracking-widest">
                   {b}
                 </span>
               ))}
@@ -161,26 +151,19 @@ export default function Home() {
             {heroBooks.map((book, i) => (
               <div
                 key={book.id}
-                className={`bg-gradient-to-br ${book.coverColor} rounded-2xl p-5 shadow-warm-lg flex flex-col justify-end min-h-[180px] cursor-pointer hover:scale-105 transition-transform duration-300 ${i % 2 === 1 ? 'mt-6' : ''}`}
+                className={`bg-neutral-100 dark:bg-neutral-900 border border-black dark:border-white p-6 flex flex-col justify-end min-h-[200px] cursor-pointer hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors ${i % 2 === 1 ? 'mt-8' : ''}`}
                 onClick={() => setSelected(book)}
               >
-                <div className="bg-black/30 backdrop-blur-sm rounded-xl p-3">
-                  <p className="font-display font-bold text-white text-sm leading-tight">{book.title}</p>
-                  <p className="text-white/70 text-xs">{book.author}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-white font-bold text-sm">₹{book.price}</span>
-                    <span className="text-white/50 line-through text-xs">₹{book.mrp}</span>
+                <div>
+                  <p className="font-bold text-xl leading-tight uppercase tracking-tight">{book.title}</p>
+                  <p className="opacity-70 text-sm mt-2">{book.author}</p>
+                  <div className="flex items-center gap-2 mt-4">
+                    <span className="font-bold text-lg">₹{book.price}</span>
+                    <span className="opacity-50 line-through text-sm">₹{book.mrp}</span>
                   </div>
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-
-        {/* Scroll hint */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 animate-pulse-slow">
-          <div className="w-5 h-8 rounded-full border-2 border-cream-300/50 flex items-start justify-center pt-1">
-            <div className="w-1 h-2 bg-cream-300/50 rounded-full" />
           </div>
         </div>
       </section>
@@ -189,63 +172,54 @@ export default function Home() {
       <StatsBar />
 
       {/* HOW IT WORKS */}
-      <section className="section-pad">
-        <div className="text-center mb-12">
-          <p className="text-amber-500 font-semibold text-sm tracking-wide uppercase mb-2">Simple. Fast. Rewarding.</p>
-          <h2 className="font-display font-bold text-3xl md:text-4xl text-forest-800 dark:text-cream-100">How PageBack Works</h2>
+      <section className="section-pad border-b border-black">
+        <div className="text-center mb-16">
+          <h2 className="font-bold text-5xl md:text-7xl uppercase tracking-tighter text-black dark:text-white">How it Works</h2>
         </div>
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-16">
           {/* Buy */}
-          <div className="bg-white dark:bg-forest-800 rounded-2xl p-8 shadow-card border border-cream-200 dark:border-forest-700">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-forest-700 flex items-center justify-center text-white font-bold">🛒</div>
-              <h3 className="font-display font-bold text-2xl text-forest-800 dark:text-cream-100">How to Buy</h3>
-            </div>
-            <div className="space-y-4">
+          <div className="border border-black dark:border-white p-10 flex flex-col">
+            <h3 className="font-bold text-3xl uppercase mb-8 border-b border-black dark:border-white pb-4">Buy</h3>
+            <div className="space-y-6 flex-1">
               {[
-                { n: '01', t: 'Browse & Filter', d: 'Search by genre, author, or condition. Use filters to find exactly what you need.' },
-                { n: '02', t: 'Check Condition Report', d: 'Read our detailed condition report before buying. No surprises.' },
-                { n: '03', t: 'Add to Cart & Order', d: 'Place your order. We pack and ship within 24 hours.' },
-                { n: '04', t: 'Happy Reading!', d: 'Enjoy your book. You also helped the planet by choosing pre-loved.' },
+                { n: '01', t: 'Find a Book', d: 'Search our inventory of curated reads.' },
+                { n: '02', t: 'Verified Quality', d: 'Every book is inspected and verified.' },
+                { n: '03', t: 'Delivered', d: 'Shipped to your door instantly.' },
               ].map(s => (
-                <div key={s.n} className="flex gap-4">
-                  <span className="font-display font-bold text-3xl text-cream-200 dark:text-forest-600 flex-shrink-0 w-10">{s.n}</span>
+                <div key={s.n} className="flex gap-6">
+                  <span className="font-bold text-4xl text-neutral-300 dark:text-neutral-700">{s.n}</span>
                   <div>
-                    <p className="font-semibold text-forest-800 dark:text-cream-100 mb-0.5">{s.t}</p>
-                    <p className="text-sm text-forest-500 dark:text-cream-400">{s.d}</p>
+                    <p className="font-bold uppercase tracking-wider">{s.t}</p>
+                    <p className="text-sm text-neutral-500 mt-1">{s.d}</p>
                   </div>
                 </div>
               ))}
             </div>
-            <Link to="/buy" className="mt-6 btn-primary flex items-center justify-center gap-2 w-full">
-              Browse Books <ArrowRight size={16} />
+            <Link to="/buy" className="mt-8 btn-primary flex items-center justify-center w-full uppercase tracking-widest text-sm">
+              Start Buying
             </Link>
           </div>
 
           {/* Sell */}
-          <div className="bg-forest-700 dark:bg-forest-800 rounded-2xl p-8 shadow-warm border border-forest-600">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-white font-bold">💰</div>
-              <h3 className="font-display font-bold text-2xl text-white">How to Sell</h3>
-            </div>
-            <div className="space-y-4">
+          <div className="border border-black dark:border-white p-10 bg-black text-white dark:bg-white dark:text-black flex flex-col">
+            <h3 className="font-bold text-3xl uppercase mb-8 border-b border-neutral-700 dark:border-neutral-300 pb-4">Sell</h3>
+            <div className="space-y-6 flex-1">
               {[
-                { n: '01', t: 'Search Your Book', d: 'Enter title, author or ISBN. We instantly find it in our database.' },
-                { n: '02', t: 'Get Instant Quote', d: 'Select the condition and see your payout price immediately.' },
-                { n: '03', t: 'Schedule Pickup', d: 'Enter your address. We pickup from your doorstep — free of charge.' },
-                { n: '04', t: 'Get Paid!', d: 'Money in your account within 24 hours of quality check.' },
+                { n: '01', t: 'Get a Quote', d: 'Instantly view payout online.' },
+                { n: '02', t: 'Free Pickup', d: 'We come to your door securely.' },
+                { n: '03', t: 'Get Payout', d: 'Paid instantly on verification.' },
               ].map(s => (
-                <div key={s.n} className="flex gap-4">
-                  <span className="font-display font-bold text-3xl text-forest-500 flex-shrink-0 w-10">{s.n}</span>
+                <div key={s.n} className="flex gap-6">
+                  <span className="font-bold text-4xl text-neutral-700 dark:text-neutral-300">{s.n}</span>
                   <div>
-                    <p className="font-semibold text-white mb-0.5">{s.t}</p>
-                    <p className="text-sm text-cream-300">{s.d}</p>
+                    <p className="font-bold uppercase tracking-wider">{s.t}</p>
+                    <p className="text-sm text-neutral-400 dark:text-neutral-600 mt-1">{s.d}</p>
                   </div>
                 </div>
               ))}
             </div>
-            <Link to="/sell" className="mt-6 btn-amber flex items-center justify-center gap-2 w-full">
-              Sell Your Books <ArrowRight size={16} />
+            <Link to="/sell" className="mt-8 border border-white text-white hover:bg-white hover:text-black dark:border-black dark:text-black dark:hover:bg-black dark:hover:text-white px-6 py-3 font-bold text-center uppercase tracking-widest text-sm transition-colors">
+              Start Selling
             </Link>
           </div>
         </div>
@@ -257,23 +231,20 @@ export default function Home() {
       </div>
 
       {/* GENRE GRID */}
-      <section className="section-pad">
-        <div className="text-center mb-10">
-          <p className="text-amber-500 font-semibold text-sm tracking-wide uppercase mb-2">Explore</p>
-          <h2 className="font-display font-bold text-3xl md:text-4xl text-forest-800 dark:text-cream-100">Browse by Genre</h2>
+      <section className="section-pad border-b border-black">
+        <div className="mb-10">
+          <h2 className="font-bold text-5xl md:text-7xl uppercase tracking-tighter">Genres</h2>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {genres.map(g => (
+          {genres.map((g, i) => (
             <Link
               key={g.id}
               to={`/buy?genre=${g.id}`}
-              className={`group relative bg-gradient-to-br ${g.color} rounded-2xl p-6 text-white text-center overflow-hidden hover:scale-105 hover:shadow-warm-lg transition-all duration-300`}
+              className="group border border-black dark:border-white p-6 text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
             >
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
-              <span className="text-4xl block mb-2">{g.icon}</span>
-              <p className="font-display font-bold text-lg relative z-10">{g.label}</p>
-              <p className="text-white/70 text-xs mt-1 relative z-10">
-                {books.filter(b => b.genre === g.id).length} books
+              <p className="font-bold text-lg uppercase tracking-widest">{g.label}</p>
+              <p className="opacity-70 text-xs mt-2 font-mono">
+                [{books.filter(b => b.genre === g.id).length}]
               </p>
             </Link>
           ))}
@@ -281,17 +252,15 @@ export default function Home() {
       </section>
 
       {/* WHY PAGEBACK */}
-      <section className="bg-forest-700 dark:bg-forest-900 py-16 px-4 md:px-8">
-        <div className="max-w-7xl mx-auto text-center mb-12">
-          <p className="text-amber-400 font-semibold text-sm tracking-wide uppercase mb-2">Why Choose Us</p>
-          <h2 className="font-display font-bold text-3xl md:text-4xl text-white">The PageBack Promise</h2>
+      <section className="bg-neutral-100 dark:bg-neutral-900 py-16 px-4 md:px-8 border-b border-black">
+        <div className="max-w-7xl mx-auto text-center mb-16">
+          <h2 className="font-bold text-5xl md:text-7xl text-black dark:text-white uppercase tracking-tighter">The Promise</h2>
         </div>
         <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {whyPageBack.map((w, i) => (
-            <div key={i} className="bg-forest-600/50 dark:bg-forest-800/50 backdrop-blur-sm border border-forest-500/40 rounded-2xl p-6 text-center hover:bg-forest-600 dark:hover:bg-forest-700 transition-colors group">
-              <span className="text-4xl block mb-3 group-hover:scale-110 transition-transform duration-200">{w.icon}</span>
-              <h3 className="font-display font-bold text-white text-lg mb-2">{w.title}</h3>
-              <p className="text-cream-300 text-sm leading-relaxed">{w.desc}</p>
+            <div key={i} className="border border-black dark:border-white p-8 text-center hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors group">
+              <h3 className="font-bold uppercase text-lg mb-2 tracking-widest">{w.title}</h3>
+              <p className="opacity-70 text-sm leading-relaxed">{w.desc}</p>
             </div>
           ))}
         </div>
@@ -299,9 +268,8 @@ export default function Home() {
 
       {/* TESTIMONIALS */}
       <section className="section-pad">
-        <div className="text-center mb-10">
-          <p className="text-amber-500 font-semibold text-sm tracking-wide uppercase mb-2">Community</p>
-          <h2 className="font-display font-bold text-3xl md:text-4xl text-forest-800 dark:text-cream-100">What Readers Say</h2>
+        <div className="mb-10">
+          <h2 className="font-bold text-4xl uppercase tracking-tighter">Community</h2>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {testimonials.map(t => (
@@ -325,24 +293,19 @@ export default function Home() {
       </section>
 
       {/* ENVIRONMENTAL IMPACT */}
-      <section className="bg-gradient-to-r from-emerald-600 to-forest-600 dark:from-forest-800 dark:to-emerald-900 py-16 px-4">
-        <div className="max-w-4xl mx-auto text-center text-white">
-          <p className="text-emerald-200 font-semibold text-sm tracking-wide uppercase mb-2">Every Book Matters</p>
-          <h2 className="font-display font-bold text-3xl md:text-4xl mb-4">Together, we're saving the planet 🌍</h2>
-          <p className="text-emerald-100 text-lg mb-10">
-            Every used book keeps pulp from landfills and trees standing tall. Here's what PageBack's community has saved so far:
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <section className="bg-black dark:bg-neutral-900 border-t border-b border-black py-16 px-4">
+        <div className="max-w-6xl mx-auto text-white">
+          <h2 className="font-bold text-4xl md:text-6xl mb-12 uppercase tracking-tighter">Impact Tracker</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
             {[
-              { val: totalBooksSite.toLocaleString(), label: 'Books Rehomed', icon: '📚' },
-              { val: `${envImpact.paperKg} kg`, label: 'Paper Saved', icon: '📄' },
-              { val: `${envImpact.trees}+`, label: 'Trees Saved', icon: '🌳' },
-              { val: `${(totalBooksSite * 0.2).toFixed(0)} kg`, label: 'CO₂ Reduced', icon: '🌍' },
+              { val: totalBooksSite.toLocaleString(), label: 'Rehomed' },
+              { val: `${envImpact.paperKg} KG`, label: 'Paper' },
+              { val: `${envImpact.trees}+`, label: 'Trees' },
+              { val: `${(totalBooksSite * 0.2).toFixed(0)} KG`, label: 'CO2' },
             ].map((s, i) => (
-              <div key={i} className="bg-white/10 backdrop-blur-sm rounded-2xl p-5">
-                <span className="text-3xl block mb-1">{s.icon}</span>
-                <p className="font-display font-bold text-3xl text-white">{s.val}</p>
-                <p className="text-emerald-200 text-sm">{s.label}</p>
+              <div key={i} className="border-l-2 border-white pl-4">
+                <p className="font-bold text-5xl md:text-6xl text-white tracking-tighter">{s.val}</p>
+                <p className="text-neutral-400 text-sm mt-2 uppercase tracking-widest font-bold">{s.label}</p>
               </div>
             ))}
           </div>
@@ -351,16 +314,15 @@ export default function Home() {
 
       {/* BOOK REQUEST CTA */}
       <section className="section-pad text-center">
-        <div className="bg-gradient-to-br from-amber-50 to-cream-100 dark:from-forest-800 dark:to-forest-700 rounded-3xl p-12 border border-amber-100 dark:border-forest-600 shadow-warm max-w-3xl mx-auto">
-          <span className="text-5xl block mb-4">🎯</span>
-          <h2 className="font-display font-bold text-3xl md:text-4xl text-forest-800 dark:text-cream-100 mb-3">
-            Can't find your book?
+        <div className="bg-black text-white dark:bg-white dark:text-black p-12 lg:p-20 border border-black dark:border-white max-w-4xl mx-auto">
+          <h2 className="font-bold text-4xl md:text-6xl mb-6 uppercase tracking-tighter">
+            Can't find it?
           </h2>
-          <p className="text-forest-500 dark:text-cream-400 text-lg mb-6">
-            Request it! We'll notify you the moment it arrives. Hundreds of readers are already building wishlists.
+          <p className="text-neutral-400 dark:text-neutral-600 text-lg mb-10 max-w-xl mx-auto">
+            Request it. We'll notify you the moment it arrives in our inventory.
           </p>
-          <Link to="/buy?tab=request" className="btn-amber inline-flex items-center gap-2 text-lg px-8 py-4">
-            Request a Book <ArrowRight size={18} />
+          <Link to="/buy?tab=request" className="border border-white text-white hover:bg-white hover:text-black dark:border-black dark:text-black dark:hover:bg-black dark:hover:text-white transition-colors inline-block text-lg px-8 py-5 uppercase tracking-widest font-bold">
+            Request Title
           </Link>
         </div>
       </section>

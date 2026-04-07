@@ -42,59 +42,57 @@ export default function BookCard({ book, onView }) {
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
         />
-        {/* Fallback colored cover */}
+        {/* Fallback minimal cover */}
         <div
           style={{ display: 'none' }}
-          className={`absolute inset-0 bg-gradient-to-br ${book.coverColor} flex flex-col items-center justify-center p-4 text-white`}
+          className="absolute inset-0 bg-neutral-100 dark:bg-neutral-800 flex flex-col items-center justify-center p-4 text-neutral-900 dark:text-neutral-100"
         >
-          <span className="text-4xl mb-2">📖</span>
-          <p className="font-display font-bold text-center text-sm leading-tight">{book.title}</p>
-          <p className="text-xs mt-1 opacity-80">{book.author}</p>
+          <p className="font-bold text-center text-sm uppercase tracking-wider">{book.title}</p>
+          <p className="text-xs mt-2 text-neutral-500">{book.author}</p>
         </div>
 
-        {/* Overlay buttons */}
-        <div className="absolute inset-0 bg-forest-900/0 group-hover:bg-forest-900/40 transition-all duration-300 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+        <div className="absolute inset-0 bg-black/60 transition-all duration-300 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 backdrop-blur-sm">
           <button
             onClick={() => onView?.(book)}
-            className="bg-white text-forest-700 px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1 hover:bg-cream-100 transition-colors shadow-lg"
+            className="bg-white text-black px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-neutral-200 transition-colors"
           >
-            <Eye size={14} /> View
+            <Eye size={14} className="inline mr-1" /> View
           </button>
         </div>
 
         {/* Condition badge */}
-        <span className={`absolute top-2 left-2 text-xs font-semibold px-2 py-1 rounded-full ${conditionStyles[book.condition] || 'badge-good'}`}>
+        <span className={`absolute top-2 left-2 ${conditionStyles[book.condition] || 'badge-good'} bg-white dark:bg-black`}>
           {book.condition}
         </span>
 
         {/* PageBack Verified */}
-        <span className="absolute top-2 right-2 bg-forest-700 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
-          ✓ Verified
+        <span className="absolute top-2 right-2 bg-black text-white text-[10px] font-bold px-2 py-0.5 uppercase tracking-widest">
+          Verified
         </span>
       </div>
 
       {/* Info */}
-      <div className="p-4 flex flex-col flex-1">
-        <p className="text-xs text-forest-400 dark:text-cream-400 mb-1">{book.genre}</p>
-        <h3 className="font-display font-semibold text-forest-800 dark:text-cream-100 text-base leading-tight line-clamp-2 mb-1">
+      <div className="p-4 flex flex-col flex-1 border-t border-transparent group-hover:border-neutral-200 dark:group-hover:border-neutral-700 transition-colors">
+        <p className="text-[10px] uppercase tracking-widest text-neutral-400 mb-1">{book.genre}</p>
+        <h3 className="font-bold text-neutral-900 dark:text-neutral-100 text-base leading-snug line-clamp-2 mb-1">
           {book.title}
         </h3>
-        <p className="text-sm text-forest-500 dark:text-cream-400 mb-3">{book.author}</p>
+        <p className="text-xs text-neutral-500 mb-4">{book.author}</p>
 
         {/* Pricing */}
-        <div className="flex items-center gap-2 mb-2">
-          <span className="font-display font-bold text-xl text-forest-700 dark:text-cream-100">₹{book.price}</span>
-          <span className="text-sm text-forest-400 dark:text-cream-500 line-through">₹{book.mrp}</span>
+        <div className="flex flex-col mb-4">
+          <span className="font-bold text-xl text-black dark:text-white">₹{book.price}</span>
+          <span className="text-xs text-neutral-400 line-through">₹{book.mrp} MRP</span>
         </div>
 
         {/* Savings bar */}
-        <div className="mb-3">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">You save ₹{savings}</span>
-            <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">{pct}% off</span>
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-1.5 border-b border-dashed border-neutral-200 pb-1">
+            <span className="text-[10px] text-black dark:text-white font-bold uppercase">Save ₹{savings}</span>
+            <span className="text-[10px] text-black dark:text-white font-bold">{pct}% OFF</span>
           </div>
-          <div className="h-1.5 rounded-full bg-cream-200 dark:bg-forest-700 overflow-hidden">
-            <div ref={barRef} className="savings-bar h-full rounded-full" />
+          <div className="h-1 bg-neutral-100 dark:bg-neutral-800 overflow-hidden">
+            <div ref={barRef} className="savings-bar h-full" />
           </div>
         </div>
 
@@ -102,14 +100,13 @@ export default function BookCard({ book, onView }) {
         <button
           onClick={() => addToCart(book)}
           disabled={inCart}
-          className={`mt-auto flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+          className={`mt-auto flex items-center justify-center py-3 text-xs uppercase font-bold tracking-widest transition-colors ${
             inCart
-              ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 cursor-default'
-              : 'btn-primary'
+              ? 'bg-neutral-200 dark:bg-neutral-800 text-neutral-400 cursor-default'
+              : 'border border-black dark:border-white text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black'
           }`}
         >
-          <ShoppingCart size={15} />
-          {inCart ? 'Added to Cart' : 'Add to Cart'}
+          {inCart ? 'Added' : 'Add to Cart'}
         </button>
       </div>
     </div>
