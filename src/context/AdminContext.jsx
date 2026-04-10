@@ -16,6 +16,7 @@ export function AdminProvider({ children }) {
   const [inventoryLoading, setInventoryLoading] = useState(true);
   const [promoCodes, setPromoCodes] = useState([]);
   const [deliverySettings, setDeliverySettings] = useState(DEFAULT_DELIVERY);
+  const [bookRequests, setBookRequests] = useState([]);
 
   useEffect(() => { localStorage.setItem('pb_admin_session', String(adminLoggedIn)); }, [adminLoggedIn]);
 
@@ -34,7 +35,8 @@ export function AdminProvider({ children }) {
         if (data.delivery) setDeliverySettings(data.delivery);
       }
     });
-    return () => { unsubOrders(); unsubSells(); unsubInv(); unsubPromos(); unsubSettings(); };
+    const unsubBookReqs = onSnapshot(collection(db, 'bookRequests'), snap => setBookRequests(snap.docs.map(d => ({ ...d.data(), id: d.id }))));
+    return () => { unsubOrders(); unsubSells(); unsubInv(); unsubPromos(); unsubSettings(); unsubBookReqs(); };
   }, []);
 
   // ── Admin Auth ──
@@ -133,6 +135,13 @@ export function AdminProvider({ children }) {
   const deletePromoCode = async (id)    => await deleteDoc(doc(db, 'promos', String(id)));
   const updateDeliverySettings = async (s) => await setDoc(doc(db, 'admin', 'settings'), { delivery: s }, { merge: true });
 
+  // ── Book Requests (consumer) ──
+  const updateBookRequest = async (id, status, note = '') => {
+    await updateDoc(doc(db, 'bookRequests', String(id)), {
+      status, adminNote: note, reviewedAt: new Date().toISOString()
+    });
+  };
+
   return (
     <AdminContext.Provider value={{
       adminLoggedIn, adminLogin, adminLogout, changeAdminCredentials, adminCreds,
@@ -141,6 +150,7 @@ export function AdminProvider({ children }) {
       inventory, updateInventoryBook, addInventoryBook, deleteInventoryBook, importCSV, inventoryLoading,
       promoCodes, addPromoCode, updatePromoCode, deletePromoCode,
       deliverySettings, updateDeliverySettings,
+      bookRequests, updateBookRequest,
     }}>
       {children}
     </AdminContext.Provider>

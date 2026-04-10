@@ -4,7 +4,7 @@ import { useApp } from '../context/AppContext';
 import { 
   Lock, Tag, PackageSearch, Inbox, Database, LogOut, 
   Search, Plus, Upload, Trash2, Check, X, ShieldAlert, Camera,
-  Menu
+  Menu, BookOpen
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -116,11 +116,12 @@ export default function AdminPortal() {
   }
 
   const tabs = [
-    { id: 'orders',    label: 'Orders',              icon: PackageSearch },
-    { id: 'sellReqs',  label: 'Sell Requests',        icon: Inbox },
-    { id: 'inventory', label: 'Inventory',            icon: Database },
-    { id: 'promo',     label: 'Discounts & Delivery', icon: Tag },
-    { id: 'security',  label: 'Settings',             icon: Lock },
+    { id: 'orders',       label: 'Orders',              icon: PackageSearch },
+    { id: 'sellReqs',     label: 'Sell Requests',        icon: Inbox },
+    { id: 'bookReqs',     label: 'Pending Requests',     icon: BookOpen },
+    { id: 'inventory',    label: 'Inventory',            icon: Database },
+    { id: 'promo',        label: 'Discounts & Delivery', icon: Tag },
+    { id: 'security',     label: 'Settings',             icon: Lock },
   ];
 
   return (
@@ -219,7 +220,8 @@ export default function AdminPortal() {
 
         <div className="max-w-5xl mx-auto p-4 lg:p-8">
           {activeTab === 'orders'    && <OrdersTab />}
-          {activeTab === 'sellReqs' && <SellRequestsTab />}
+          {activeTab === 'sellReqs'  && <SellRequestsTab />}
+          {activeTab === 'bookReqs'  && <BookRequestsTab />}
           {activeTab === 'inventory' && <InventoryTab />}
           {activeTab === 'promo'     && <PromoTab />}
           {activeTab === 'security'  && <SecurityTab />}
@@ -354,6 +356,162 @@ function SellRequestsTab() {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+// ────────────────────────────────────────────────────────
+function BookRequestsTab() {
+  const { bookRequests, updateBookRequest } = useAdmin();
+  const [filter, setFilter] = useState('pending');
+  const [noteState, setNoteState] = useState({});
+
+  const filtered = bookRequests
+    .filter(r => filter === 'all' ? true : (r.status || 'pending') === filter)
+    .sort((a, b) => new Date(b.date || b.submittedAt || 0) - new Date(a.date || a.submittedAt || 0));
+
+  const pendingCount = bookRequests.filter(r => !r.status || r.status === 'pending').length;
+
+  const STATUS_BADGES = {
+    pending:   'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400',
+    fulfilled: 'bg-forest-100 dark:bg-forest-700/40 text-forest-700 dark:text-forest-300',
+    dismissed: 'bg-gray-100 dark:bg-forest-700/20 text-gray-500 dark:text-cream-500',
+  };
+
+  return (
+    <div className="animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div>
+          <h2 className="font-display font-bold text-2xl text-forest-800 dark:text-cream-100">Pending Book Requests</h2>
+          <p className="text-xs text-forest-400 dark:text-cream-500 mt-1 uppercase tracking-widest font-medium">
+            Books requested by consumers · {pendingCount} pending
+          </p>
+        </div>
+        <div className="flex gap-1 text-[10px] font-bold uppercase tracking-widest">
+          {['pending','fulfilled','dismissed','all'].map(f => (
+            <button key={f} onClick={() => setFilter(f)}
+              className={`px-3 py-1.5 transition-colors border ${
+                filter === f
+                  ? 'bg-forest-800 text-white border-forest-800'
+                  : 'border-cream-300 dark:border-forest-600 text-forest-500 dark:text-cream-400 hover:bg-cream-100 dark:hover:bg-forest-700'
+              }`}>
+              {f}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {filtered.length === 0 ? (
+        <div className={`${cardCls} p-10 text-center`}>
+          <BookOpen size={32} className="mx-auto mb-3 text-forest-300 dark:text-forest-600" />
+          <p className="text-sm text-forest-400 dark:text-cream-500 font-medium">No {filter === 'all' ? '' : filter} book requests.</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {filtered.map(r => {
+            const status = r.status || 'pending';
+            return (
+              <div key={r.id} className={`${cardCls} p-5`}>
+                <div className="flex justify-between items-start gap-4 mb-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                      <h3 className="font-bold text-forest-700 dark:text-cream-100 text-base leading-tight">
+                        {r.title || r.bookTitle || '—'}
+                      </h3>
+                      <span className={`text-[10px] px-2.5 py-0.5 font-bold uppercase tracking-wider ${STATUS_BADGES[status] || STATUS_BADGES.pending}`}>
+                        {status}
+                      </span>
+                    </div>
+                    {r.author && (
+                      <p className="text-xs text-forest-500 dark:text-cream-500">by {r.author}</p>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-forest-400 dark:text-cream-600 whitespace-nowrap flex-shrink-0">
+                    {r.date ? new Date(r.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 text-xs">
+                  {r.userName && (
+                    <div>
+                      <span className={lblCls}>Customer</span>
+                      <span className="text-forest-700 dark:text-cream-200 font-medium block">{r.userName}</span>
+                    </div>
+                  )}
+                  {r.userEmail && (
+                    <div>
+                      <span className={lblCls}>Email</span>
+                      <span className="text-forest-700 dark:text-cream-200 block break-all">{r.userEmail}</span>
+                    </div>
+                  )}
+                  {r.userPhone && (
+                    <div>
+                      <span className={lblCls}>Phone</span>
+                      <span className="text-forest-700 dark:text-cream-200 block">{r.userPhone}</span>
+                    </div>
+                  )}
+                  {r.genre && (
+                    <div>
+                      <span className={lblCls}>Genre</span>
+                      <span className="text-forest-700 dark:text-cream-200 block">{r.genre}</span>
+                    </div>
+                  )}
+                  {r.language && (
+                    <div>
+                      <span className={lblCls}>Language</span>
+                      <span className="text-forest-700 dark:text-cream-200 block">{r.language}</span>
+                    </div>
+                  )}
+                  {r.budget && (
+                    <div>
+                      <span className={lblCls}>Budget</span>
+                      <span className="text-forest-700 dark:text-cream-200 block">₹{r.budget}</span>
+                    </div>
+                  )}
+                </div>
+
+                {r.message && (
+                  <div className="mb-4 text-xs bg-cream-100 dark:bg-forest-700/30 border border-cream-200 dark:border-forest-600 p-3">
+                    <span className={lblCls}>Note from customer</span>
+                    <p className="text-forest-600 dark:text-cream-300 leading-relaxed">{r.message}</p>
+                  </div>
+                )}
+
+                {status === 'pending' && (
+                  <div className="space-y-2">
+                    <div>
+                      <span className={lblCls}>Admin note (optional)</span>
+                      <input
+                        type="text"
+                        value={noteState[r.id] || ''}
+                        onChange={e => setNoteState(prev => ({ ...prev, [r.id]: e.target.value }))}
+                        placeholder="Internal note…"
+                        className={inputCls + ' text-xs'}
+                      />
+                    </div>
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <button
+                        onClick={() => updateBookRequest(r.id, 'fulfilled', noteState[r.id] || '')}
+                        className="flex-1 sm:flex-none px-4 py-2 border border-forest-200 bg-forest-50 dark:bg-forest-700/30 text-forest-700 dark:text-cream-300 hover:bg-forest-100 transition-colors text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2">
+                        <Check size={13} /> Mark Fulfilled
+                      </button>
+                      <button
+                        onClick={() => updateBookRequest(r.id, 'dismissed', noteState[r.id] || '')}
+                        className="flex-1 sm:flex-none px-4 py-2 border border-red-200 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 transition-colors text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2">
+                        <X size={13} /> Dismiss
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {status !== 'pending' && r.adminNote && (
+                  <div className="mt-2 text-xs text-forest-500 dark:text-cream-500 italic">Admin note: {r.adminNote}</div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
